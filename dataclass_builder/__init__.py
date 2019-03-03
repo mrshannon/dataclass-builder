@@ -2,7 +2,7 @@
 
 import inspect
 import itertools
-from dataclasses import Field, _MISSING_TYPE
+from dataclasses import Field, _MISSING_TYPE, _FIELDS
 from typing import Any, Mapping, MutableMapping, Iterator
 
 from cached_property import cached_property  # type: ignore
@@ -37,10 +37,9 @@ class MissingFieldError(DataclassBuilderError):
 class DataclassBuilder(MutableMapping[str, Any]):
 
     def __init__(self, dataclass: Any, **kwargs: Any):
-        # any class that has a __dataclass_fields__ attribute is considered a
-        # dataclass
+        # any class that has a _FIELDS attribute is considered a dataclass
         assert inspect.isclass(dataclass)
-        assert hasattr(dataclass, '__dataclass_fields__')
+        assert hasattr(dataclass, _FIELDS)
         self.__dataclass = dataclass
         self.__dataclass_attributes: MutableMapping[str, Any] = dict()
         for key, value in kwargs.items():
@@ -72,7 +71,7 @@ class DataclassBuilder(MutableMapping[str, Any]):
     def __setattr__(self, item: str, value: Any) -> None:
         if item.startswith('_' + self.__class__.__name__):
             self.__dict__[item] = value
-        elif item not in self.__dataclass.__dataclass_fields__:
+        elif item not in self.__fields:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
                 f"field '{item}'", self.__dataclass, item)
@@ -89,7 +88,7 @@ class DataclassBuilder(MutableMapping[str, Any]):
         args = itertools.chain(
             [self.__dataclass.__name__],
             (f'{key}={self.__dataclass_attributes[key]}'
-             for key in self.__dataclass.__dataclass_fields__
+             for key in getattr(self.__dataclass, _FIELDS)
              if key in self.__dataclass_attributes))
         return f"{self.__class__.__name__}({', '.join(args)})"
 
@@ -115,14 +114,14 @@ class DataclassBuilder(MutableMapping[str, Any]):
     def __required_fields(self) -> Mapping[str, 'Field[Any]']:
         return {name: field
                 for name, field in
-                self.__dataclass.__dataclass_fields__.items()
+                getattr(self.__dataclass, _FIELDS).items()
                 if _isrequired(field)}
 
     @cached_property
     def __optional_fields(self) -> Mapping[str, 'Field[Any]']:
         return {name: field
                 for name, field in
-                self.__dataclass.__dataclass_fields__.items()
+                getattr(self.__dataclass, _FIELDS).items()
                 if field.init and not _isrequired(field)}
 
 
