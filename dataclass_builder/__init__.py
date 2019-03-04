@@ -1,8 +1,7 @@
 """Create instances of dataclasses with the builder pattern."""
 
-import inspect
 import itertools
-from dataclasses import Field, _MISSING_TYPE, _FIELDS
+import dataclasses
 from typing import Any, Mapping
 
 __version__ = '0.0.1a1'
@@ -25,8 +24,7 @@ class UndefinedFieldError(DataclassBuilderError):
 
 class MissingFieldError(DataclassBuilderError):
 
-    def __init__(self, message: str, dataclass: Any, field: 'Field[Any]') \
-            -> None:
+    def __init__(self, message: str, dataclass: Any, field: str) -> None:
         super().__init__(message)
         self.dataclass = dataclass
         self.field = field
@@ -35,14 +33,13 @@ class MissingFieldError(DataclassBuilderError):
 class DataclassBuilder:
 
     def __init__(self, dataclass: Any, **kwargs: Any):
-        assert inspect.isclass(dataclass)
-        assert hasattr(dataclass, _FIELDS)
+        if not dataclasses.is_dataclass(dataclass):
+            raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
-        fields_ = getattr(self.__dataclass, _FIELDS).items()
-        self.__fields = {
-            name: field.type for name, field in fields_ if field.init}
+        fields_ = dataclasses.fields(self.__dataclass)
+        self.__fields = {field.name for field in fields_ if field.init}
         self.__required_fields = {
-            name: field.type for name, field in fields_ if _isrequired(field)}
+            field.name for field in fields_ if _isrequired(field)}
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -82,7 +79,7 @@ def build(builder: DataclassBuilder) -> Any:
 
 def fields(builder: DataclassBuilder, *,
            required: bool = True, optional: bool = True) \
-        -> Mapping[str, 'Field[Any]']:
+        -> Mapping[str, 'dataclasses.Field[Any]']:
     if required and optional:
         fields_ = getattr(builder, f'_{builder.__class__.__name__}__fields')
     elif required:
@@ -94,6 +91,6 @@ def fields(builder: DataclassBuilder, *,
     return {field.name: field.type for field in fields_.values()}
 
 
-def _isrequired(field: 'Field[Any]') -> bool:
-    return field.init and isinstance(field.default, _MISSING_TYPE) and \
-           isinstance(field.default_factory, _MISSING_TYPE)  # type: ignore
+def _isrequired(field: 'dataclasses.Field[Any]') -> bool:
+    return field.init and field.default == dataclasses.MISSING and \
+           field.default_factory == dataclasses.MISSING  # type: ignore
