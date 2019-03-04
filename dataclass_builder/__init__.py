@@ -64,18 +64,16 @@ class DataclassBuilder:
         return f"{self.__class__.__name__}({', '.join(args)})"
 
     def __build(self) -> Any:
+        for field in self.__required_fields:
+            if field not in self.__dict__:
+                raise MissingFieldError(
+                    f"field '{field}' of dataclass "
+                    f"'{self.__dataclass.__name__}' is not optional",
+                    self.__dataclass, field)
         kwargs = {key: value
                   for key, value in self.__dict__.items()
                   if key in self.__fields}
-        try:
-            return self.__dataclass(**kwargs)
-        except TypeError:
-            for field in self.__required_fields:
-                if field not in self.__dict__:
-                    raise MissingFieldError(
-                        f"field '{field}' of dataclass "
-                        f"'{self.__dataclass.__name__}' is not optional",
-                        self.__dataclass, field)
+        return self.__dataclass(**kwargs)
 
 
 def build(builder: DataclassBuilder) -> Any:
