@@ -3,7 +3,7 @@
 import inspect
 import itertools
 from dataclasses import Field, _MISSING_TYPE, _FIELDS
-from typing import Any, Mapping, MutableMapping, Iterator
+from typing import Any, Mapping
 
 __version__ = '0.0.1a1'
 
@@ -32,7 +32,7 @@ class MissingFieldError(DataclassBuilderError):
         self.field = field
 
 
-class DataclassBuilder(MutableMapping[str, Any]):
+class DataclassBuilder:
 
     def __init__(self, dataclass: Any, **kwargs: Any):
         assert inspect.isclass(dataclass)
@@ -45,25 +45,6 @@ class DataclassBuilder(MutableMapping[str, Any]):
             name: field.type for name, field in fields_ if _isrequired(field)}
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-    def __getitem__(self, key: str) -> Any:
-        if key in self.__fields and hasattr(self, key):
-            return getattr(self, key)
-        raise KeyError(repr(key))
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        if key in self.__fields:
-            self.__dict__[key] = value
-
-    def __delitem__(self, key: str) -> None:
-        if key in self.__fields:
-            del self.__dict__[key]
-
-    def __iter__(self) -> Iterator[str]:
-        return iter(self.__fields)
-
-    def __len__(self) -> int:
-        return len(self.__fields)
 
     def __setattr__(self, item: str, value: Any) -> None:
         if item.startswith('_' + self.__class__.__name__):
@@ -78,7 +59,8 @@ class DataclassBuilder(MutableMapping[str, Any]):
     def __repr__(self) -> str:
         args = itertools.chain(
             [self.__dataclass.__name__],
-            (f'{key}={self[key]}' for key in self.__fields if key in self))
+            (f'{item}={getattr(self, item)}'
+             for item in self.__fields if hasattr(self, item)))
         return f"{self.__class__.__name__}({', '.join(args)})"
 
     def __build(self) -> Any:
