@@ -1,5 +1,3 @@
-import pytest
-
 from dataclass_builder import DataclassBuilder, fields
 from tests.conftest import PixelCoord, Point, Circle, Types
 
@@ -91,4 +89,3 @@ def test_returns_no_fields():
     assert [] == list(fields_.keys())
     assert [] == [f.name for f in fields_.values()]
     assert [] == [f.type for f in fields_.values()]
-
