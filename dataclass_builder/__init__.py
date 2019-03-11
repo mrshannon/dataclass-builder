@@ -1,7 +1,7 @@
 """Create instances of dataclasses with the builder pattern."""
 
-import itertools
 import dataclasses
+import itertools
 from typing import Any, Mapping
 
 __version__ = '0.0.1a1'
@@ -37,16 +37,16 @@ class DataclassBuilder:
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
         fields_ = dataclasses.fields(self.__dataclass)
-        self.__fields = [field.name for field in fields_ if field.init]
-        self.__required_fields = {
-            field.name for field in fields_ if _isrequired(field)}
+        self.__settable_fields = [field.name for field in fields_ if field.init]
+        self.__required_fields = [
+            field.name for field in fields_ if _isrequired(field)]
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
         if item.startswith('_' + self.__class__.__name__):
             self.__dict__[item] = value
-        elif item not in self.__fields:
+        elif item not in self.__settable_fields:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
                 f"field '{item}'", self.__dataclass, item)
@@ -57,7 +57,7 @@ class DataclassBuilder:
         args = itertools.chain(
             [self.__dataclass.__name__],
             (f'{item}={getattr(self, item)}'
-             for item in self.__fields if hasattr(self, item)))
+             for item in self.__settable_fields if hasattr(self, item)))
         return f"{self.__class__.__name__}({', '.join(args)})"
 
     def __build(self) -> Any:
@@ -69,8 +69,26 @@ class DataclassBuilder:
                     self.__dataclass, field)
         kwargs = {key: value
                   for key, value in self.__dict__.items()
-                  if key in self.__fields}
+                  if key in self.__settable_fields}
         return self.__dataclass(**kwargs)
+
+    def __fields(self, required: bool = True, optional: bool = True) -> \
+            Mapping[str, 'datalcasses.Field[Any]']:
+        if not required and not optional:
+            return {}
+        if required and not optional:
+            return {field.name: field
+                    for field in dataclasses.fields(self.__dataclass)
+                    if field.name in self.__required_fields}
+        if not required and optional:
+            optional_fields = {name for name in self.__settable_fields
+                               if name not in self.__required_fields}
+            return {field.name: field
+                    for field in dataclasses.fields(self.__dataclass)
+                    if field.name in optional_fields}
+        return {field.name: field
+                for field in dataclasses.fields(self.__dataclass)
+                if field.name in self.__settable_fields}
 
 
 def build(builder: DataclassBuilder) -> Any:
@@ -80,15 +98,8 @@ def build(builder: DataclassBuilder) -> Any:
 def fields(builder: DataclassBuilder, *,
            required: bool = True, optional: bool = True) \
         -> Mapping[str, 'dataclasses.Field[Any]']:
-    if required and optional:
-        fields_ = getattr(builder, f'_{builder.__class__.__name__}__fields')
-    elif required:
-        fields_ = getattr(
-            builder, f'_{builder.__class__.__name__}__required_fields')
-    else:
-        fields_ = getattr(
-            builder, f'_{builder.__class__.__name__}__optional_fields')
-    return {field.name: field.type for field in fields_.values()}
+    return getattr(builder, f'_{builder.__class__.__name__}__fields')(
+        required=required, optional=optional)
 
 
 def _isrequired(field: 'dataclasses.Field[Any]') -> bool:

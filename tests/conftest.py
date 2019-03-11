@@ -22,3 +22,15 @@ class Circle:
 
     def __post_init__(self):
         self.area = math.pi*self.radius**2
+
+
+@dataclass
+class Types:
+    int_: int
+    float_: float
+    str_: str = 'hello'
+
+
+class NotADataclass:
+    i: int
+    j: int
