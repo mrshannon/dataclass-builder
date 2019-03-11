@@ -37,7 +37,7 @@ class DataclassBuilder:
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
         fields_ = dataclasses.fields(self.__dataclass)
-        self.__fields = {field.name for field in fields_ if field.init}
+        self.__fields = [field.name for field in fields_ if field.init]
         self.__required_fields = {
             field.name for field in fields_ if _isrequired(field)}
         for key, value in kwargs.items():
