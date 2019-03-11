@@ -2,7 +2,7 @@ import pytest
 
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
-from tests.conftest import PixelCoord, Point, Circle
+from tests.conftest import PixelCoord, Point, Circle, NotADataclass
 
 
 def test_all_fields_set():
@@ -36,6 +36,11 @@ def test_repr():
             repr(DataclassBuilder(PixelCoord, x=3)))
     assert ('DataclassBuilder(PixelCoord, y=7)' ==
             repr(DataclassBuilder(PixelCoord, y=7)))
+
+
+def test_must_be_dataclass():
+    with pytest.raises(TypeError):
+        DataclassBuilder(NotADataclass)
 
 
 def test_missing_field():
