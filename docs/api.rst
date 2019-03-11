@@ -4,4 +4,4 @@ API Reference
 .. toctree::
    :maxdepth: 4
 
-   api/dataclass-builder
+   api/dataclass_builder

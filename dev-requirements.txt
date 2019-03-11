@@ -2,6 +2,7 @@
 -r requirements.txt
 
 # documentation
+packaging
 sphinx>=1.7
 sphinx_paramlinks
 
