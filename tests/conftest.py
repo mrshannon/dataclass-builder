@@ -1,6 +1,6 @@
-import pytest
 import math
 from dataclasses import dataclass, field
+
 
 @dataclass
 class PixelCoord:
