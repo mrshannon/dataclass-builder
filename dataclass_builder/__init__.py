@@ -37,7 +37,8 @@ class DataclassBuilder:
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
         fields_ = dataclasses.fields(self.__dataclass)
-        self.__settable_fields = [field.name for field in fields_ if field.init]
+        self.__settable_fields = [
+            field.name for field in fields_ if field.init]
         self.__required_fields = [
             field.name for field in fields_ if _isrequired(field)]
         for key, value in kwargs.items():
@@ -73,7 +74,7 @@ class DataclassBuilder:
         return self.__dataclass(**kwargs)
 
     def __fields(self, required: bool = True, optional: bool = True) -> \
-            Mapping[str, 'datalcasses.Field[Any]']:
+            Mapping[str, 'dataclasses.Field[Any]']:
         if not required and not optional:
             return {}
         if required and not optional:
@@ -98,8 +99,10 @@ def build(builder: DataclassBuilder) -> Any:
 def fields(builder: DataclassBuilder, *,
            required: bool = True, optional: bool = True) \
         -> Mapping[str, 'dataclasses.Field[Any]']:
-    return getattr(builder, f'_{builder.__class__.__name__}__fields')(
+    fields_method = getattr(builder, f'_{builder.__class__.__name__}__fields')
+    fields_: Mapping[str, 'dataclasses.Field[Any]'] = fields_method(
         required=required, optional=optional)
+    return fields_
 
 
 def _isrequired(field: 'dataclasses.Field[Any]') -> bool:
