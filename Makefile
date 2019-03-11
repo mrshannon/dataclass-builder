@@ -33,11 +33,12 @@ check:
 		([ $$? -eq 0 ] && echo "README.rst ok") || \
 		echo "Invalid markup in README.rst!"
 	@mypy $(module)
-	@flake8 $(module)
+	@flake8 $(module) tests
 	@python -m pylint $(module)
 	@python -m pycodestyle $(module) tests
 	@python -m pydocstyle $(module)
 
+apidoc: export SPHINX_APIDOC_OPTIONS=members,no-undoc-members,show-inheritance,private-members,special-members
 apidoc:
 	@sphinx-apidoc -o docs/api -e $(module)
 	@rm docs/api/modules.rst
