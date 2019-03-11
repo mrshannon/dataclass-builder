@@ -9,7 +9,7 @@ sphinx_paramlinks
 # testing
 flake8
 mypy
-pytest
+pytest>=3.6
 pytest-cov
 pytest-mock
 pylint
