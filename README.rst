@@ -29,7 +29,7 @@ Using a builder instance is the fastest way to get started with
 .. code-block:: python
 
     from dataclasses
-    from dataclass_builder import DataclassBuilder
+    from dataclass_builder import DataclassBuilder, build, fields
 
     @dataclass
     class Point:
@@ -45,19 +45,7 @@ Now we can build a point.
     >>> p1_builder.x = 5.8
     >>> p1_builder.y = 8.1
     >>> p1_builder.w = 2.0
-    >>> p1 = p1_builder.build()
-    Point(x=5.8, y=8.1, w=2.0)
-
-Dictionary notation can also be used, and is required if the dataclass
-contains a field named `build`.
-
-.. code-block:: python
-
-    >>> p2_builder = DataclassBuilder(Point)
-    >>> p2_builder['x'] = 5.8
-    >>> p2_builder['y'] = 8.1
-    >>> p2_builder['w'] = 2.0
-    >>> p2 = p2_builder.build()
+    >>> p1 = build(p1_builder)
     Point(x=5.8, y=8.1, w=2.0)
 
 Field values can also be provided in the constructor.
@@ -67,7 +55,7 @@ Field values can also be provided in the constructor.
     >>> p3_builder = DataclassBuilder(Point, w=100)
     >>> p3_builder['x'] = 5.8
     >>> p3_builder['y'] = 8.1
-    >>> p3 = p3_builder.build()
+    >>> p3 = build(p3_builder)
     Point(x=5.8, y=8.1, w=100)
 
 Fields with default values in the `dataclass` are optional in the builder.
@@ -77,7 +65,7 @@ Fields with default values in the `dataclass` are optional in the builder.
     >>> p4_builder = DataclassBuilder(Point)
     >>> p4_builder.x = 5.8
     >>> p4_builder.y = 8.1
-    >>> p4 = p4_builder.build()
+    >>> p4 = build(p4_builder)
     Point(x=5.8, y=8.1, w=1.0)
 
 Fields that don't have default values in the `dataclass` are not optional.
@@ -86,10 +74,10 @@ Fields that don't have default values in the `dataclass` are not optional.
 
     >>> p5_builder = DataclassBuilder(Point)
     >>> p5_builder.y = 8.1
-    >>> p5 = p5_builder.build()
+    >>> p5 = build(p5_builder)
     MissingFieldError: field 'x' of dataclass 'Point' is not optional
 
-Undefined fields cannot be set via attribute syntax.
+Fields not defined in the dataclass cannot be set in the builder.
 
 .. code-block:: python
 
@@ -97,17 +85,8 @@ Undefined fields cannot be set via attribute syntax.
     >>> p6_builder.z = 3.0
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
-However, they can be set (and ignored) via dictionary syntax.
-
-.. code-block:: python
-
-    >>> p7_builder = DataclassBuilder(Point, x=1.0, y=2.0)
-    >>> p7_builder['z'] = 3.0
-    >>> p7 = py_builder.build()
-    Point(x=1.0, y=2.0, w=1.0)
-
 Accessing a field of the builder before it is set results in an
-`AttributeError` if using attribute syntax.
+`AttributeError`.
 
 .. code-block:: python
 
@@ -115,17 +94,11 @@ Accessing a field of the builder before it is set results in an
     >>> p8.x
     AttributeError: 'DataclassBuilder' object has no attribute 'x'
 
-and a `KeyError` if using dictionary syntax.
-
-.. code-block:: python
-
-    >>> p8['x']
-    KeyError: 'x'
 
 
 
-Dedicated Builder
-^^^^^^^^^^^^^^^^^
+Dedicated Builder (coming soon)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A dedicated builder can make more sense if used often or when needing to
 document the builder.
@@ -133,7 +106,7 @@ document the builder.
 .. code-block:: python
 
     from dataclasses
-    from dataclass_builder import dataclass_builder
+    from dataclass_builder import dataclass_builder, build
 
     @dataclass
     class Point:
@@ -153,8 +126,17 @@ Now we can build a point.
     >>> p_builder.x = 5.8
     >>> p_builder.y = 8.1
     >>> p_builder.w = 2.0
-    >>> p = p_builder.build()
+    >>> p = build(p_builder)
     Point(x=5.8, y=8.1, w=2.0)
+
+In addition to providing field values during initialization as with the Builder
+Instance they can also be provided in the decorator.
+
+.. code-block::
+
+    @dataclass_builder(w=100)
+    class PointBuilder:
+        pass
 
 The following two statements are mostly equivalent, with the exception of
 documentation and type.
@@ -167,11 +149,15 @@ documentation and type.
 Therefore, see the section on *Builder Instance* for further documentation.
 
 
+
+
 Requirements
 ------------
 
 * Python 3.6 or greater
 * dataclasses_ if using Python 3.6
+
+
 
 
 Installation
