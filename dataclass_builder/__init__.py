@@ -24,7 +24,8 @@ class UndefinedFieldError(DataclassBuilderError):
 
 class MissingFieldError(DataclassBuilderError):
 
-    def __init__(self, message: str, dataclass: Any, field: str) -> None:
+    def __init__(self, message: str, dataclass: Any,
+                 field: 'dataclasses.Field[Any]') -> None:
         super().__init__(message)
         self.dataclass = dataclass
         self.field = field
@@ -67,7 +68,7 @@ class DataclassBuilder:
                 raise MissingFieldError(
                     f"field '{field}' of dataclass "
                     f"'{self.__dataclass.__name__}' is not optional",
-                    self.__dataclass, field)
+                    self.__dataclass, self.__fields()[field])
         kwargs = {key: value
                   for key, value in self.__dict__.items()
                   if key in self.__settable_fields}

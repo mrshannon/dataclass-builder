@@ -1,5 +1,6 @@
 import pytest
 
+import dataclasses
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
 from tests.conftest import PixelCoord, Point, Circle, NotADataclass
@@ -52,7 +53,7 @@ def test_missing_field():
         build(builder)
     except MissingFieldError as err:
         assert err.dataclass == PixelCoord
-        assert err.field == 'x'
+        assert err.field == dataclasses.fields(PixelCoord)[0]
     # fields set by assignment
     builder = DataclassBuilder(PixelCoord)
     builder.x = 9
@@ -62,7 +63,7 @@ def test_missing_field():
         build(builder)
     except MissingFieldError as err:
         assert err.dataclass == PixelCoord
-        assert err.field == 'y'
+        assert err.field == dataclasses.fields(PixelCoord)[1]
 
 
 def test_undefined_field():
