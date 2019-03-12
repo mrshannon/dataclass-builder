@@ -7,9 +7,9 @@ Create instances of Python dataclasses with the builder pattern.
 |coverage-status|
 
 |version|
-|supported-implementations|
 |supported-versions|
 |wheel|
+|status|
 
 
 Usage
@@ -183,6 +183,10 @@ Installation
 
 .. |version| image:: https://img.shields.io/pypi/v/dataclass-builder.svg
     :alt: PyPI Package latest release
+    :target: https://pypi.python.org/pypi/dataclass-builder
+
+.. |status| image:: https://img.shields.io/pypi/status/dataclass-builder.svg
+    :alt: Status
     :target: https://pypi.python.org/pypi/dataclass-builder
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/dataclass-builder.svg
