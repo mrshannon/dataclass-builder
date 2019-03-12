@@ -83,6 +83,8 @@ Fields not defined in the dataclass cannot be set in the builder.
     >>> p6_builder.z = 3.0
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
+No exception will be raised for fields beginning with an underscore.
+
 Accessing a field of the builder before it is set results in an
 `AttributeError`.
 

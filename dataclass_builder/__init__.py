@@ -68,6 +68,8 @@ Fields not defined in the dataclass cannot be set in the builder.
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
+No exception will be raised for fields beginning with an underscore.
+
 Accessing a field of the builder before it is set results in an
 `AttributeError`.
 
