@@ -22,6 +22,7 @@ setup(
     author_email='mrshannon.aerospace@gmail.com',
     description='Create instances of dataclasses with the builder pattern.',
     long_description=read('README.rst'),
+    long_description_content_type='text/x-rst',
     license='MIT',
     url='https://github.com/mrshannon/dataclass-builder',
     packages=find_packages(),

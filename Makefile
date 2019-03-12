@@ -29,9 +29,6 @@ coverage: check
 		--cov-report html
 
 check:
-	@python setup.py check --restructuredtext --strict && \
-		([ $$? -eq 0 ] && echo "README.rst ok") || \
-		echo "Invalid markup in README.rst!"
 	@mypy $(module)
 	@flake8 $(module) tests
 	@python -m pylint $(module)
@@ -52,6 +49,7 @@ pdf: apidoc
 package: test
 	@python setup.py sdist
 	@python setup.py bdist_wheel
+	@twine check dist/*
 
 clean:
 	@rm -f docs/api/*.rst
