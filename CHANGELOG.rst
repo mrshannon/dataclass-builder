@@ -14,11 +14,11 @@ Added
 ^^^^^
 
 * :code:`DataclassBuilder` class to wrap Python dataclasses_ with a factory
-    implementing the builder pattern.
+  implementing the builder pattern.
 * :code:`build` function to construct a dataclass_ from a
-    :code:`DataclassBuilder`.
+  :code:`DataclassBuilder`.
 * :code:`fields` function to extract information about the available fields
-    from a :code:`DataclassBuilder`.
+  from a :code:`DataclassBuilder`.
 
 
 
