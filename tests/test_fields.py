@@ -1,5 +1,5 @@
 from dataclass_builder import DataclassBuilder, fields
-from tests.conftest import PixelCoord, Point, Circle, Types
+from tests.conftest import PixelCoord, Point, Circle, Types, ExtendedBuilder
 
 
 def test_returns_settable_fields():
@@ -89,3 +89,10 @@ def test_returns_no_fields():
     assert [] == list(fields_.keys())
     assert [] == [f.name for f in fields_.values()]
     assert [] == [f.type for f in fields_.values()]
+
+
+def test_class_inheritance():
+    fields_ = fields(ExtendedBuilder(Types))
+    assert ['int_', 'float_', 'str_'] == list(fields_.keys())
+    assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
+    assert [int, float, str] == [f.type for f in fields_.values()]

@@ -68,6 +68,8 @@ Fields not defined in the dataclass cannot be set in the builder.
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
+No exception will be raised for fields beginning with an underscore.
+
 Accessing a field of the builder before it is set results in an
 `AttributeError`.
 
@@ -161,6 +163,12 @@ class DataclassBuilder:
     constructed with.  When done use the :func:`build` function to attempt
     to build the underlying dataclass_.
 
+    .. warning::
+
+        Because this class overrides attribute assignment when extending
+        it care must be taken to only use private or "dunder" attributes
+        and methods.
+
     Parameters
     ----------
     dataclass
@@ -197,30 +205,40 @@ class DataclassBuilder:
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
-        """Set a field value, or an object attribute if "dunder".
+        """Set a field value, or an object attribute if it is private.
+
+        .. note::
+
+            This will pass through all attributes beginning with an underscore.
+            If this is a valid field of the dataclass_ it will still be built
+            correction but UndefinedFieldError will not be thrown for
+            attributes beginning with an underscore.
+
+            If you need the exception to be thrown then set the field in the
+            constructor.
 
         Parameters
         ----------
         item
-            Name of the dataclass_ field or "dunder" to set.
+            Name of the dataclass_ field or private/"dunder" attribute to set.
         value
-            Value to assign to the dataclass_ field or "dunder".
+            Value to assign to the dataclass_ field or private/"dunder"
+            attribute.
 
         Raises
         ------
         UndefinedFieldError
             If :paramref:`item` is not initialisable in the underlying
-            dataclass_.  If :paramref:`item` is a "dunder" then this
-            exception will not be raised.
+            dataclass_.  If :paramref:`item` is private (begins with an
+            underscore) or is a "dunder" then this exception will not
+            be raised.
         """
-        if item.startswith('_' + self.__class__.__name__):
+        if item.startswith('_') or item in self.__settable_fields:
             self.__dict__[item] = value
-        elif item not in self.__settable_fields:
+        else:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
                 f"field '{item}'", self.__dataclass, item)
-        else:
-            self.__dict__[item] = value
 
     def __repr__(self) -> str:
         """Print a representation of the builder.
@@ -238,7 +256,7 @@ class DataclassBuilder:
              for item in self.__settable_fields if hasattr(self, item)))
         return f"{self.__class__.__name__}({', '.join(args)})"
 
-    def __build(self) -> Any:
+    def _build(self) -> Any:
         """Build the underlying dataclass_ using the fields from this builder.
 
         Returns
@@ -259,13 +277,13 @@ class DataclassBuilder:
                 raise MissingFieldError(
                     f"field '{field}' of dataclass "
                     f"'{self.__dataclass.__name__}' is not optional",
-                    self.__dataclass, self.__fields()[field])
+                    self.__dataclass, self._fields()[field])
         kwargs = {key: value
                   for key, value in self.__dict__.items()
                   if key in self.__settable_fields}
         return self.__dataclass(**kwargs)
 
-    def __fields(self, required: bool = True, optional: bool = True) -> \
+    def _fields(self, required: bool = True, optional: bool = True) -> \
             Mapping[str, 'dataclasses.Field[Any]']:
         """Get a dictionary of the builder's fields.
 
@@ -310,7 +328,7 @@ def build(builder: DataclassBuilder) -> Any:
 
         This is not a method of :class:`DataclassBuilder` in order to not
         interfere with possible field names.  This function will use special
-        "dunder" methods of :class:`DataclassBuilder` which are excepted from
+        private methods of :class:`DataclassBuilder` which are excepted from
         field assignment.
 
     Parameters
@@ -331,7 +349,8 @@ def build(builder: DataclassBuilder) -> Any:
         builder.
 
     """
-    return getattr(builder, f'_{builder.__class__.__name__}__build')()
+    # pylint: disable=protected-access
+    return builder._build()
 
 
 def fields(builder: DataclassBuilder, *,
@@ -343,7 +362,7 @@ def fields(builder: DataclassBuilder, *,
 
         This is not a method of :class:`DataclassBuilder` in order to not
         interfere with possible field names.  This function will use special
-        "dunder" methods of :class:`DataclassBuilder` which are excepted from
+        private methods of :class:`DataclassBuilder` which are excepted from
         field assignment.
 
     Parameters
@@ -363,10 +382,8 @@ def fields(builder: DataclassBuilder, *,
         dataclass_.
 
     """
-    fields_method = getattr(builder, f'_{builder.__class__.__name__}__fields')
-    fields_: Mapping[str, 'dataclasses.Field[Any]'] = fields_method(
-        required=required, optional=optional)
-    return fields_
+    # pylint: disable=protected-access
+    return builder._fields(required=required, optional=optional)
 
 
 def _isrequired(field: 'dataclasses.Field[Any]') -> bool:

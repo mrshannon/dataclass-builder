@@ -4,7 +4,7 @@ import dataclasses
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
 from tests.conftest import (PixelCoord, Point, Circle, NotADataclass,
-                            NoFields, NoInitFields)
+                            NoFields, NoInitFields, ExtendedBuilder)
 
 
 def test_all_fields_set():
@@ -157,3 +157,9 @@ def test_access_invalid_field():
     builder = DataclassBuilder(Point)
     with pytest.raises(AttributeError):
         print(builder.i)
+
+
+def test_class_inheritance():
+    builder = ExtendedBuilder(Point, y=4, w=10)
+    builder.x = 8
+    assert Point(8, 4, 10) == build(builder)
