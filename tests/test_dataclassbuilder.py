@@ -3,7 +3,8 @@ import pytest
 import dataclasses
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
-from tests.conftest import PixelCoord, Point, Circle, NotADataclass
+from tests.conftest import (PixelCoord, Point, Circle, NotADataclass,
+                            NoFields, NoInitFields)
 
 
 def test_all_fields_set():
@@ -137,3 +138,22 @@ def test_init_false_field_cannot_be_set():
     except UndefinedFieldError as err:
         assert err.dataclass == Circle
         assert err.field == 'area'
+
+
+def test_handles_dataclass_without_fields():
+    builder = DataclassBuilder(NoFields)
+    assert NoFields() == build(builder)
+    builder = DataclassBuilder(NoInitFields)
+    assert NoInitFields() == build(builder)
+
+
+def test_access_unset_field():
+    builder = DataclassBuilder(Point)
+    with pytest.raises(AttributeError):
+        print(builder.x)
+
+
+def test_access_invalid_field():
+    builder = DataclassBuilder(Point)
+    with pytest.raises(AttributeError):
+        print(builder.i)

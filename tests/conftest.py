@@ -34,3 +34,13 @@ class Types:
 class NotADataclass:
     i: int
     j: int
+
+
+@dataclass
+class NoFields:
+    pass
+
+
+@dataclass
+class NoInitFields:
+    message: str = field(default='hello', init=False)
