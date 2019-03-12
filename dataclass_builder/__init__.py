@@ -1,5 +1,86 @@
 """Create instances of dataclasses with the builder pattern.
 
+Examples
+--------
+
+Using a builder instance is the fastest way to get started with
+`dataclass-builder`.
+
+.. testcode::
+
+    from dataclasses import dataclass
+    from dataclass_builder import DataclassBuilder, build, fields
+
+    @dataclass
+    class Point:
+        x: float
+        y: float
+        w: float = 1.0
+
+Now we can build a point.
+
+.. doctest::
+
+    >>> p1_builder = DataclassBuilder(Point)
+    >>> p1_builder.x = 5.8
+    >>> p1_builder.y = 8.1
+    >>> p1_builder.w = 2.0
+    >>> build(p1_builder)
+    Point(x=5.8, y=8.1, w=2.0)
+
+Field values can also be provided in the constructor.
+
+.. doctest::
+
+    >>> p3_builder = DataclassBuilder(Point, w=100)
+    >>> p3_builder.x = 5.8
+    >>> p3_builder.y = 8.1
+    >>> build(p3_builder)
+    Point(x=5.8, y=8.1, w=100)
+
+Fields with default values in the `dataclass` are optional in the builder.
+
+.. doctest::
+
+    >>> p4_builder = DataclassBuilder(Point)
+    >>> p4_builder.x = 5.8
+    >>> p4_builder.y = 8.1
+    >>> build(p4_builder)
+    Point(x=5.8, y=8.1, w=1.0)
+
+Fields that don't have default values in the `dataclass` are not optional.
+
+.. doctest::
+
+    >>> p5_builder = DataclassBuilder(Point)
+    >>> p5_builder.y = 8.1
+    >>> build(p5_builder)
+    Traceback (most recent call last):
+    ...
+    MissingFieldError: field 'x' of dataclass 'Point' is not optional
+
+Fields not defined in the dataclass cannot be set in the builder.
+
+.. doctest::
+
+    >>> p6_builder = DataclassBuilder(Point)
+    >>> p6_builder.z = 3.0
+    Traceback (most recent call last):
+    ...
+    UndefinedFieldError: dataclass 'Point' does not define field 'z'
+
+Accessing a field of the builder before it is set results in an
+`AttributeError`.
+
+.. doctest::
+
+    >>> p8_builder = DataclassBuilder(Point)
+    >>> p8_builder.x
+    Traceback (most recent call last):
+    ...
+    AttributeError: 'DataclassBuilder' object has no attribute 'x'
+
+
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
 """
 

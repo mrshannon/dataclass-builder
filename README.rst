@@ -3,7 +3,7 @@ dataclass-builder
 
 **WORK IN PROGRESS: This will be removed on first release.**
 
-Create instances of dataclasses with the builder pattern.
+Create instances of Python dataclasses with the builder pattern.
 
 |build-status|
 |coverage-status|
@@ -28,7 +28,7 @@ Using a builder instance is the fastest way to get started with
 
 .. code-block:: python
 
-    from dataclasses
+    from dataclasses import dataclass
     from dataclass_builder import DataclassBuilder, build, fields
 
     @dataclass
@@ -53,8 +53,8 @@ Field values can also be provided in the constructor.
 .. code-block:: python
 
     >>> p3_builder = DataclassBuilder(Point, w=100)
-    >>> p3_builder['x'] = 5.8
-    >>> p3_builder['y'] = 8.1
+    >>> p3_builder.x = 5.8
+    >>> p3_builder.y = 8.1
     >>> p3 = build(p3_builder)
     Point(x=5.8, y=8.1, w=100)
 
