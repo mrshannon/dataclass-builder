@@ -64,6 +64,7 @@ clean:
 	@rm -rf __pycache__ dataclass_builder/__pycache__ tests/__pycache__
 	@rm -rf *.egg-info
 	@rm -rf dist
+	@rm -rf build
 
 clean-all: clean
 	@rm -rf .tox

@@ -1,2 +1,1 @@
-cached-property
 dataclasses;python_version=="3.6"

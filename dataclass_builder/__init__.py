@@ -2,7 +2,6 @@
 
 Examples
 --------
-
 Using a builder instance is the fastest way to get started with
 `dataclass-builder`.
 
@@ -88,7 +87,7 @@ import dataclasses
 import itertools
 from typing import Any, Mapping
 
-__version__ = '0.0.1a1'
+__version__ = '0.0.1'
 
 __all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError',
            'DataclassBuilder', 'build', 'fields']

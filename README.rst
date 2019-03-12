@@ -1,8 +1,6 @@
 dataclass-builder
 =================
 
-**WORK IN PROGRESS: This will be removed on first release.**
-
 Create instances of Python dataclasses with the builder pattern.
 
 |build-status|

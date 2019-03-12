@@ -1,5 +1,12 @@
 import os
+import re
 from setuptools import setup, find_packages
+
+
+def read_version(filename):
+    return re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+        read(filename), re.MULTILINE).group(1)
 
 
 def read(filename):
@@ -10,7 +17,7 @@ def read(filename):
 
 setup(
     name='dataclass-builder',
-    version='0.0.1a1',
+    version=read_version('dataclass_builder/__init__.py'),
     author='Michael R. Shannon',
     author_email='mrshannon.aerospace@gmail.com',
     description='Create instances of dataclasses with the builder pattern.',
@@ -23,7 +30,6 @@ setup(
     },
     setup_requires=['pytest-runner'],
     install_requires=[
-        'cached-property',
         'dataclasses;python_version=="3.6"'
     ],
     tests_require=[

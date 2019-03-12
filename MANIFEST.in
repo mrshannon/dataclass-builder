@@ -1,3 +1,4 @@
 include LICENSE
-include *.rst *.txt
+include README.rst
+include CHANGELOG.rst
 global-exclude .git .gitignore .DS_Store
