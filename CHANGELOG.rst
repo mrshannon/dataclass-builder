@@ -5,9 +5,6 @@ Changelog
 Unreleased_
 -----------
 
-Fixed
-^^^^^
-
 * Added additional unit tests.
 * Fixed issue #1 preventing :code:`DataclassBuilder` from being subclassed.
 * Fields beginning with an underscore will no longer be checked.
