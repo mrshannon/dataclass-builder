@@ -89,69 +89,9 @@ import dataclasses
 import itertools
 from typing import Any, Mapping
 
-__version__ = '0.0.2a1'
+from .exceptions import UndefinedFieldError, MissingFieldError
 
-__all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError',
-           'DataclassBuilder', 'build', 'fields']
-
-
-class DataclassBuilderError(Exception):
-    """Base class of errors raised by :class:`DataclassBuilder`."""
-
-
-class UndefinedFieldError(DataclassBuilderError):
-    """Exception thrown when attempting to assign to an invalid field.
-
-    Parameters
-    ----------
-    message
-        Human readable error message
-    dataclass
-        Dataclass the :class:`DataclassBuilder` was made for.
-    field
-        Name of the invalid field that the calling code tried to assign to.
-
-    Attributes
-    ----------
-    dataclass
-        Dataclass the :class:`DataclassBuilder` was made for.
-    field
-        Name of the invalid field that the calling code tried to assign to.
-    """
-
-    def __init__(self, message: str, dataclass: Any, field: str) -> None:
-        super().__init__(message)
-        self.dataclass = dataclass
-        self.field = field
-
-
-class MissingFieldError(DataclassBuilderError):
-    """Thrown when fields are missing when building a dataclass_ object.
-
-    Parameters
-    ----------
-    message
-        Human readable error message
-    dataclass
-        Dataclass the :class:`DataclassBuilder` was made for.
-    field
-        The :class:`dataclasses.Field` representing the missing field that
-        needs to be assigned.
-
-    Attributes
-    ----------
-    dataclass
-        Dataclass the :class:`DataclassBuilder` was made for.
-    field
-        The :class:`dataclasses.Field` representing the missing field that
-        needs to be assigned.
-    """
-
-    def __init__(self, message: str, dataclass: Any,
-                 field: 'dataclasses.Field[Any]') -> None:
-        super().__init__(message)
-        self.dataclass = dataclass
-        self.field = field
+__all__ = ['DataclassBuilder']
 
 
 class DataclassBuilder:
@@ -316,74 +256,6 @@ class DataclassBuilder:
         return {field.name: field
                 for field in dataclasses.fields(self.__dataclass)
                 if field.name in self.__settable_fields}
-
-
-def build(builder: DataclassBuilder) -> Any:
-    """Use the given :class:`DataclassBuilder` to initialize a dataclass_.
-
-    This will use the values assigned to the given :paramref:`builder` to
-    construct a dataclass_ of the type the :paramref:`builder` was created for.
-
-    .. note::
-
-        This is not a method of :class:`DataclassBuilder` in order to not
-        interfere with possible field names.  This function will use special
-        private methods of :class:`DataclassBuilder` which are excepted from
-        field assignment.
-
-    Parameters
-    ----------
-    builder
-        The dataclass builder to build from.
-
-    Returns
-    -------
-    dataclass_
-        An instance of the dataclass given in :func:`__init__` using the
-        fields set on this builder.
-
-    Raises
-    ------
-    MissingFieldError
-        If not all of the required fields have been assigned to this
-        builder.
-
-    """
-    # pylint: disable=protected-access
-    return builder._build()
-
-
-def fields(builder: DataclassBuilder, *,
-           required: bool = True, optional: bool = True) \
-        -> Mapping[str, 'dataclasses.Field[Any]']:
-    """Get a dictionary of the given :class:`DataclassBuilder`'s fields.
-
-    .. note::
-
-        This is not a method of :class:`DataclassBuilder` in order to not
-        interfere with possible field names.  This function will use special
-        private methods of :class:`DataclassBuilder` which are excepted from
-        field assignment.
-
-    Parameters
-    ----------
-    builder
-        The dataclass builder to get the fields for.
-    required
-        Set to False to not report required fields.
-    optional
-        Set to False to not report optional fields.
-
-    Returns
-    -------
-    Mapping[str, 'dataclasses.Field[Any]']
-        A mapping from field names to actual :class:`dataclasses.Field`'s
-        in the same order as the :paramref:`builder`'s underlying
-        dataclass_.
-
-    """
-    # pylint: disable=protected-access
-    return builder._fields(required=required, optional=optional)
 
 
 def _isrequired(field: 'dataclasses.Field[Any]') -> bool:
