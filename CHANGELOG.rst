@@ -5,20 +5,23 @@ Changelog
 Unreleased_
 -----------
 
+Fixed
+^^^^^
+
+* Added additional unit tests.
+* Fixed issue #1 preventing :code:`DataclassBuilder` from being subclassed.
+* Fields beginning with an underscore will no longer be checked.
 
 
 v0.0.1 - 2019-03-11
 -------------------
 
-Added
-^^^^^
-
-* :code:`DataclassBuilder` class to wrap Python dataclasses_ with a factory
-  implementing the builder pattern.
-* :code:`build` function to construct a dataclass_ from a
+* Added :code:`DataclassBuilder` class to wrap Python dataclasses_ with a
+  factory implementing the builder pattern.
+* Added :code:`build` function to construct a dataclass_ from a
   :code:`DataclassBuilder`.
-* :code:`fields` function to extract information about the available fields
-  from a :code:`DataclassBuilder`.
+* Added :code:`fields` function to extract information about the available
+  fields from a :code:`DataclassBuilder`.
 
 
 
