@@ -199,6 +199,9 @@ class DataclassBuilder:
     def __setattr__(self, item: str, value: Any) -> None:
         """Set a field value, or an object attribute if "dunder".
 
+        This will pass through all attributes containing one or more double
+        underscores.
+
         Parameters
         ----------
         item
@@ -213,7 +216,7 @@ class DataclassBuilder:
             dataclass_.  If :paramref:`item` is a "dunder" then this
             exception will not be raised.
         """
-        if item.startswith('_' + self.__class__.__name__):
+        if '__' in item:
             self.__dict__[item] = value
         elif item not in self.__settable_fields:
             raise UndefinedFieldError(
@@ -331,7 +334,8 @@ def build(builder: DataclassBuilder) -> Any:
         builder.
 
     """
-    return getattr(builder, f'_{builder.__class__.__name__}__build')()
+    # pylint: disable=protected-access
+    return builder._DataclassBuilder__build()  # type: ignore
 
 
 def fields(builder: DataclassBuilder, *,
@@ -363,9 +367,10 @@ def fields(builder: DataclassBuilder, *,
         dataclass_.
 
     """
-    fields_method = getattr(builder, f'_{builder.__class__.__name__}__fields')
-    fields_: Mapping[str, 'dataclasses.Field[Any]'] = fields_method(
-        required=required, optional=optional)
+    # pylint: disable=protected-access
+    fields_: Mapping[str, 'dataclasses.Field[Any]'] = (
+        builder._DataclassBuilder__fields(  # type: ignore
+            required=required, optional=optional))
     return fields_
 
 

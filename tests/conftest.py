@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass, field
+from dataclass_builder import DataclassBuilder
 
 
 @dataclass
@@ -44,3 +45,7 @@ class NoFields:
 @dataclass
 class NoInitFields:
     message: str = field(default='hello', init=False)
+
+
+class ExtendedBuilder(DataclassBuilder):
+    pass
