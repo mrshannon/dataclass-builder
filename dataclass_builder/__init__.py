@@ -87,7 +87,7 @@ import dataclasses
 import itertools
 from typing import Any, Mapping
 
-__version__ = '0.0.1post1'
+__version__ = '0.0.2alpha1'
 
 __all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError',
            'DataclassBuilder', 'build', 'fields']
