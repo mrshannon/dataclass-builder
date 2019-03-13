@@ -32,6 +32,7 @@ setup(
     setup_requires=['pytest-runner'],
     install_requires=[
         'dataclasses;python_version=="3.6"'
+        'typing-extensions',
     ],
     tests_require=[
         'pytest',
