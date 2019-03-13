@@ -30,6 +30,7 @@ class Types:
     int_: int
     float_: float
     str_: str = 'hello'
+    message: str = field(default='hello', init=False)
 
 
 class NotADataclass:

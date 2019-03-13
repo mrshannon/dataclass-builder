@@ -90,6 +90,7 @@ import itertools
 from typing import Any, Mapping
 
 from .exceptions import UndefinedFieldError, MissingFieldError
+from ._common import _is_required
 
 __all__ = ['DataclassBuilder']
 
@@ -140,7 +141,7 @@ class DataclassBuilder:
         self.__settable_fields = [
             field.name for field in fields_ if field.init]
         self.__required_fields = [
-            field.name for field in fields_ if _isrequired(field)]
+            field.name for field in fields_ if _is_required(field)]
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -256,21 +257,3 @@ class DataclassBuilder:
         return {field.name: field
                 for field in dataclasses.fields(self.__dataclass)
                 if field.name in self.__settable_fields}
-
-
-def _isrequired(field: 'dataclasses.Field[Any]') -> bool:
-    """Determine if the given :class:`dataclasses.Field` is required.
-
-    Parameters
-    ----------
-    field
-        Field to determine if it is required.
-
-    Returns
-    -------
-    bool
-        True if the :paramref:`field` is required, otherwise False.
-
-    """
-    return (field.init and field.default == dataclasses.MISSING and
-            field.default_factory == dataclasses.MISSING)  # type: ignore
