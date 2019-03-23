@@ -30,6 +30,7 @@ coverage: check
 
 check:
 	@mypy $(module)
+	@mypy --config-file tests/mypy.ini tests
 	@flake8 $(module) tests
 	@python -m pylint $(module)
 	@python -m pycodestyle $(module) tests
