@@ -5,6 +5,8 @@ Changelog
 Unreleased_
 -----------
 
+* Fixed issue #4 which caused typing errors in code using
+  :code:`DataclassBuilder`.
 
 
 v0.0.2 - 2019-03-12

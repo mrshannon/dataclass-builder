@@ -87,7 +87,7 @@ Accessing a field of the builder before it is set results in an
 
 import dataclasses
 import itertools
-from typing import Any, Mapping
+from typing import Any, Mapping, TYPE_CHECKING
 
 __version__ = '0.0.2a1'
 
@@ -239,6 +239,11 @@ class DataclassBuilder:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
                 f"field '{item}'", self.__dataclass, item)
+
+    if TYPE_CHECKING:
+        # tells type checking that it should ignore attribute access
+        def __getattr__(self, item: str) -> Any:
+            return self.__getattribute__(item)
 
     def __repr__(self) -> str:
         """Print a representation of the builder.

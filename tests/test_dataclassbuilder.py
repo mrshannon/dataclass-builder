@@ -1,10 +1,11 @@
-import pytest
+import pytest  # type: ignore
 
 import dataclasses
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
-from tests.conftest import (PixelCoord, Point, Circle, NotADataclass,
-                            NoFields, NoInitFields, ExtendedBuilder)
+from tests.conftest import (PixelCoord, Point, Circle,  # type: ignore
+                            NotADataclass, NoFields, NoInitFields,
+                            ExtendedBuilder)
 
 
 def test_all_fields_set():
