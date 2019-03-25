@@ -1,8 +1,9 @@
 from typing import (Any, Optional, Sequence, Dict, Callable, Mapping,
                     cast, TYPE_CHECKING)
 
-from ._common import _required_fields, _settable_fields,  _is_required
 from .exceptions import UndefinedFieldError, MissingFieldError
+from ._common import (_settable_fields, _required_fields, _optional_fields,
+                      _is_required)
 
 if TYPE_CHECKING:
     from dataclasses import Field
@@ -64,10 +65,6 @@ def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
     return _create_fn('__init__', args, body, env, return_type=None)
 
 
-def _build_method(self: Any):
-    return self._build()
-
-
 def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
 
     settable_fields = _settable_fields(dataclass)
@@ -109,15 +106,29 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
                   if getattr(self, name) != OPTIONAL}
         return dataclass(**kwargs)
 
+    def _fields_method(self, required: bool = True, optional: bool = True) \
+            -> Mapping[str, 'Field[Any]']:
+        if not required and not optional:
+            return {}
+        if required and not optional:
+            return _required_fields(dataclass)
+        if not required and optional:
+            return _optional_fields(dataclass)
+        return _settable_fields(dataclass)
+
     # assemble new builder class
     dict_: Dict[str, Any] = dict()
     dict_['__init__'] = _create_init_method(settable_fields)
     dict_['__setattr__'] = _setattr_method
     dict_['__repr__'] = _repr_method
     dict_['_build'] = _build_method
+    dict_['_fields'] = _fields_method
 
     if 'build' not in settable_fields:
         dict_['build'] = _build_method
+
+    if 'build' not in settable_fields:
+        dict_['fields'] = _fields_method
 
     if name is None:
         name = f'{dataclass.__name__}Builder'
