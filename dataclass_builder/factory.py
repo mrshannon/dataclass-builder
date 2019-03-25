@@ -225,13 +225,49 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
             return optional_fields
         return settable_fields
 
-    # assemble new builder class
+    # assemble new builder class methods
     dict_: Dict[str, Any] = dict()
     dict_['__init__'] = _create_init_method(settable_fields)
     dict_['__setattr__'] = _setattr_method
     dict_['__repr__'] = _repr_method
     dict_['_build'] = _build_method
     dict_['_fields'] = _fields_method
+
+    # add default docstring
+    dname = dataclass.__qualname__
+    dict_['__doc__'] = (
+        f"""Builder for the {dname} dataclass_.
+
+        This class allows the {dname} dataclass_ to be constructed with the
+        builder pattern.  Once an instance is constructed simply assign to
+        it's attributes, which are identical to the {dname} dataclass_.  When
+        done use it's `build` method, or the :func:`build` function if one of
+        the fields is `build`, to make an instance of the {dname} dataclass_
+        using the field values set on this builder.
+
+        .. warning::
+
+            Because this class overrides attribute assignment when extending
+            it care must be taken to only use private or "dunder" attributes
+            and methods.
+
+        Parameters
+        ----------
+        **kwargs
+            Optionally initialize fields during initialization of the builder.
+            These can be changed later and will raise UndefinedFieldError if
+            they are not part of the {dname} dataclass_ `__init__` method.
+
+        Raises
+        ------
+        UndefinedFieldError
+            If you try to assign to a field that is not part of the
+            :paramref:`dataclass`'s `__init__`.
+        MissingFieldError
+            If :func:`build` is called on this builder before all non default
+            fields of the :paramref:`dataclass` are assigned.
+
+        """)
 
     if 'build' not in settable_fields:
         dict_['build'] = _build_method
