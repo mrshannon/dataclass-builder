@@ -1,12 +1,13 @@
-from typing import Any, Optional, Sequence, Dict, Callable, Mapping, cast, TYPE_CHECKING
+from typing import (Any, Optional, Sequence, Dict, Callable, Mapping,
+                    cast, TYPE_CHECKING)
 
-from ._common import _required_fields, _settable_fields, _optional_fields, _is_required
+from ._common import _required_fields, _settable_fields,  _is_required
 from .exceptions import UndefinedFieldError, MissingFieldError
 
 if TYPE_CHECKING:
     from dataclasses import Field
 
-__all__ = ['dataclass_builder']
+__all__ = ['dataclass_builder', 'REQUIRED', 'OPTIONAL']
 
 
 class MISSING_TYPE:
@@ -43,7 +44,6 @@ def _create_fn(name: str, args: Sequence[str], body: Sequence[str],
     body = '\n'.join(f' {line}' for line in body)
     txt = f'def {name}({args}){return_annotation}:\n{body}'
     exec(txt, env, locals)
-    # print('\n\n' + txt)
     return cast(Callable[..., Any], locals[name])
 
 
@@ -64,54 +64,12 @@ def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
     return _create_fn('__init__', args, body, env, return_type=None)
 
 
-def _create_repr_method(fields: Mapping[str, 'Field[Any]']) \
-        -> Callable[..., str]:
-    env = {'REQUIRED': REQUIRED, 'OPTIONAL': OPTIONAL}
-    args = ['self']
-    body = ['args = []']
-    for field in fields:
-        body.append(
-            f'if self.{field} != REQUIRED and self.{field} != OPTIONAL:')
-        body.append(f' args.append(f"{field}={{repr(self.{field})}}")')
-    body.append('args = ", ".join(args)')
-    body.append('return f"{self.__class__.__qualname__}({args})"')
-    return _create_fn('__repr__', args, body, env, return_type=str)
-
-
 def _build_method(self: Any):
     return self._build()
 
 
-def _create_build_method(dataclass: Any) -> Callable[..., Any]:
-    env = {'dataclass': dataclass,
-           'REQUIRED': REQUIRED,
-           'OPTIONAL': OPTIONAL,
-           'settable_fields': _settable_fields,
-           'MissingFieldError': MissingFieldError}
-    args = ['self']
-    body = []
-
-    # check for missing required fields
-    for name, field in _required_fields(dataclass).items():
-        body.append(f'if self.{name} == REQUIRED:')
-        txt = (f"field '{name}' of dataclass '{dataclass.__qualname__}'"
-               " is not optional")
-        body.append(f' raise MissingFieldError("{txt}", dataclass, '
-                    f'settable_fields(dataclass)["{name}"])')
-
-    # build dataclass
-    required = (
-        f'"{name}": self.{name}' for name in _required_fields(dataclass))
-    body.append(f'kwargs = {{{", ".join(required)}}}')
-    for name in _optional_fields(dataclass):
-        body.append(f'if self.{name} != REQUIRED and self.{name} != OPTIONAL:')
-        body.append(f' kwargs["{name}"] = self.{name}')
-    body.append('return dataclass(**kwargs)')
-
-    return _create_fn('_build', args, body, env, return_type=str)
-
-
 def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
+
     settable_fields = _settable_fields(dataclass)
 
     # validate identifiers
@@ -130,11 +88,33 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
                 f"dataclass '{dataclass.__qualname__}' does not define "
                 f"field '{name}'", dataclass, name)
 
+    def _repr_method(self: Any) -> str:
+        args = []
+        for name in settable_fields:
+            value = getattr(self, name)
+            if value != REQUIRED and value != OPTIONAL:
+                args.append(f'{name}={repr(value)}')
+        return f'{self.__class__.__qualname__}({", ".join(args)})'
+
+    def _build_method(self: Any) -> Any:
+        # check for missing required fields
+        for name, field in _required_fields(dataclass).items():
+            if getattr(self, name) == REQUIRED:
+                raise MissingFieldError(
+                    f"field '{name}' of dataclass '{dataclass.__qualname__}' "
+                    "is not optional", dataclass, field)
+        # build dataclass
+        kwargs = {name: getattr(self, name)
+                  for name in _settable_fields(dataclass)
+                  if getattr(self, name) != OPTIONAL}
+        return dataclass(**kwargs)
+
+    # assemble new builder class
     dict_: Dict[str, Any] = dict()
     dict_['__init__'] = _create_init_method(settable_fields)
     dict_['__setattr__'] = _setattr_method
-    dict_['__repr__'] = _create_repr_method(settable_fields)
-    dict_['_build'] = _create_build_method(dataclass)
+    dict_['__repr__'] = _repr_method
+    dict_['_build'] = _build_method
 
     if 'build' not in settable_fields:
         dict_['build'] = _build_method
