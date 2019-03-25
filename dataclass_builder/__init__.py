@@ -6,9 +6,11 @@
 from .exceptions import (DataclassBuilderError, UndefinedFieldError,
                          MissingFieldError)
 from .wrapper import DataclassBuilder
+from .factory import dataclass_builder, REQUIRED, OPTIONAL
 from .utility import build, fields
 
 __version__ = '0.0.2a1'
 
 __all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError',
-           'DataclassBuilder', 'build', 'fields']
+           'DataclassBuilder', 'REQUIRED', 'OPTIONAL',
+           'dataclass_builder', 'build', 'fields']
