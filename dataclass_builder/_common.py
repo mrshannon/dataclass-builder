@@ -3,12 +3,10 @@
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
 """
 
-from typing import TYPE_CHECKING
-
-from ._typing import Dataclass
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Mapping
+    from typing import Mapping
     from dataclasses import Field, fields, MISSING
 else:
     from dataclasses import fields, MISSING
@@ -71,7 +69,7 @@ def _is_optional(field: 'Field[Any]') -> bool:
              field.default_factory != MISSING))  # type: ignore
 
 
-def _settable_fields(dataclass: Dataclass) -> 'Mapping[str, Field[Any]]':
+def _settable_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
     """Retrieve all settable fields from a dataclass_.
 
     Parameters
@@ -89,7 +87,7 @@ def _settable_fields(dataclass: Dataclass) -> 'Mapping[str, Field[Any]]':
     return {f.name: f for f in fields(dataclass) if _is_settable(f)}
 
 
-def _required_fields(dataclass: Dataclass) -> 'Mapping[str, Field[Any]]':
+def _required_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
     """Retrieve all required fields from a dataclass_.
 
     Parameters
@@ -107,7 +105,7 @@ def _required_fields(dataclass: Dataclass) -> 'Mapping[str, Field[Any]]':
     return {f.name: f for f in fields(dataclass) if _is_required(f)}
 
 
-def _optional_fields(dataclass: Dataclass) -> 'Mapping[str, Field[Any]]':
+def _optional_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
     """Retrieve all optional fields from a dataclass_.
 
     Parameters
