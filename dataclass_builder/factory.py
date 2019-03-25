@@ -12,7 +12,10 @@ from ._common import (_settable_fields, _required_fields, _optional_fields,
 from .exceptions import UndefinedFieldError, MissingFieldError
 
 if TYPE_CHECKING:
-    from dataclasses import Field
+    from dataclasses import Field, is_dataclass
+else:
+    from dataclasses import is_dataclass
+
 
 __all__ = ['dataclass_builder', 'REQUIRED', 'OPTIONAL']
 
@@ -97,7 +100,16 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
         the same signature as the :func:`dataclass_builder.utility.build` and
         :func:`dataclass_builder.utility.fields` functions.
 
+    Raises
+    ------
+    TypeError
+        If :paramref:`dataclass` is not a dataclass_.
+        This is decided via :func:`dataclasses.is_dataclass`.
+
     """
+    if not is_dataclass(dataclass):
+        raise TypeError("must be called with a dataclass type")
+
     settable_fields = _settable_fields(dataclass)
     required_fields = _required_fields(dataclass)
     optional_fields = _optional_fields(dataclass)
