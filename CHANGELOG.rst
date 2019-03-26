@@ -5,6 +5,11 @@ Changelog
 Unreleased_
 -----------
 
+* Added :code:`.factory.dataclass_builder` factory function to create builder
+  classes for specific dataclasses.
+* Moved :code:`build` and :code:`fields` functions to the :code:`.utility`
+  submodule with exports at the top level.
+* Moved :code:`DataclassBuilder` to the :code:`.wrapper` submodule.
 
 
 v0.0.2 - 2019-03-12
