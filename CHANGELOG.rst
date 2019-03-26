@@ -14,8 +14,8 @@ Unreleased_
   :code:`DataclassBuilder`.
 
 
-v0.0.2 - 2019-03-12
--------------------
+v0.0.2_ - 2019-03-12
+--------------------
 
 * Added additional unit tests.
 * Fixed issue #1 preventing :code:`DataclassBuilder` from being subclassed.
