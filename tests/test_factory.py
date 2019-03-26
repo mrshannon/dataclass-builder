@@ -406,3 +406,10 @@ def test_class_inheritance():
     assert ['int_', 'float_', 'str_'] == list(fields_.keys())
     assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
     assert [int, float, str] == [f.type for f in fields_.values()]
+
+
+def test_init_annotations():
+    TypesBuilder = dataclass_builder(Types)
+    annotations = get_type_hints(TypesBuilder.__init__)
+    assert annotations == {
+        'int_': int, 'float_': float, 'str_': str, 'return': type(None)}
