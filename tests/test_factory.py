@@ -2,15 +2,25 @@ import pytest  # type: ignore
 from typing import get_type_hints
 import dataclasses
 
-from dataclass_builder.factory import _create_fn
+from dataclass_builder.factory import _create_fn, MISSING
 from dataclass_builder import (MissingFieldError, UndefinedFieldError,
                                REQUIRED, OPTIONAL,
                                dataclass_builder, build, fields)
 from tests.conftest import (Circle, PixelCoord, Point,  # type: ignore
                             NoFields, NoInitFields, NotADataclass,
                             Build, Fields, Types)
-# from tests.conftest import (PixelCoord, Point, Circle, NotADataclass,
-#                             NoFields, NoInitFields, ExtendedBuilder)
+
+
+def test_constants():
+    assert MISSING == MISSING
+    assert MISSING != REQUIRED
+    assert REQUIRED == REQUIRED
+    assert REQUIRED != OPTIONAL
+    assert OPTIONAL == OPTIONAL
+    assert OPTIONAL != MISSING
+    assert repr(MISSING) == 'MISSING'
+    assert repr(REQUIRED) == 'REQUIRED'
+    assert repr(OPTIONAL) == 'OPTIONAL'
 
 
 def test_create_fn():
