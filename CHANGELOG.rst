@@ -5,6 +5,8 @@ Changelog
 Unreleased_
 -----------
 
+* Moved :code:`REQUIRED` and :code:`OPTIONAL` constants into :code:`._common`
+  with exports at the package level.
 
 
 v0.0.3_ - 2019-03-26
