@@ -115,7 +115,8 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
 
     # validate identifiers
     for field in _settable_fields(dataclass):
-        if not field.isidentifier():
+        # there should not be anyway to trigger this branch
+        if not field.isidentifier():  # pragma: no cover
             raise RuntimeError(
                 f"field name '{field}'' could cause a security issue, refusing"
                 f" to construct builder for '{dataclass.__qualname__}'")
