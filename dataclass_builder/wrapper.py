@@ -90,7 +90,7 @@ import itertools
 from typing import Any, Mapping, TYPE_CHECKING
 
 from .exceptions import UndefinedFieldError, MissingFieldError
-from ._common import _is_required
+from ._common import _settable_fields, _required_fields, _optional_fields
 
 __all__ = ['DataclassBuilder']
 
@@ -137,11 +137,8 @@ class DataclassBuilder:
         if not dataclasses.is_dataclass(dataclass):
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
-        fields_ = dataclasses.fields(self.__dataclass)
-        self.__settable_fields = [
-            field.name for field in fields_ if field.init]
-        self.__required_fields = [
-            field.name for field in fields_ if _is_required(field)]
+        # store this primarily for efficiency
+        self.__settable_fields = _settable_fields(dataclass)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -233,7 +230,7 @@ class DataclassBuilder:
             builder instance.
 
         """
-        for field in self.__required_fields:
+        for field in _required_fields(self.__dataclass):
             if field not in self.__dict__:
                 raise MissingFieldError(
                     f"field '{field}' of dataclass "
@@ -265,15 +262,7 @@ class DataclassBuilder:
         if not required and not optional:
             return {}
         if required and not optional:
-            return {field.name: field
-                    for field in dataclasses.fields(self.__dataclass)
-                    if field.name in self.__required_fields}
+            return _required_fields(self.__dataclass)
         if not required and optional:
-            optional_fields = {name for name in self.__settable_fields
-                               if name not in self.__required_fields}
-            return {field.name: field
-                    for field in dataclasses.fields(self.__dataclass)
-                    if field.name in optional_fields}
-        return {field.name: field
-                for field in dataclasses.fields(self.__dataclass)
-                if field.name in self.__settable_fields}
+            return _optional_fields(self.__dataclass)
+        return _settable_fields(self.__dataclass)
