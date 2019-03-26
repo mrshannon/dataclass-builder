@@ -247,37 +247,38 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
 
     # add default docstring
     dname = dataclass.__qualname__
+    params = '\n'.join([
+        f'    {name} : {field.type.__name__}\n        '
+        f'Optionally initialize `{name}` field.\n'
+        for name, field in settable_fields.items()])
     dict_['__doc__'] = (
         f"""Builder for the {dname} dataclass_.
 
-        This class allows the {dname} dataclass_ to be constructed with the
-        builder pattern.  Once an instance is constructed simply assign to
-        it's attributes, which are identical to the {dname} dataclass_.  When
-        done use it's `build` method, or the :func:`build` function if one of
-        the fields is `build`, to make an instance of the {dname} dataclass_
-        using the field values set on this builder.
+    This class allows the {dname} dataclass_ to be constructed with the
+    builder pattern.  Once an instance is constructed simply assign to
+    it's attributes, which are identical to the {dname} dataclass_.  When
+    done use it's `build` method, or the :func:`build` function if one of
+    the fields is `build`, to make an instance of the {dname} dataclass_
+    using the field values set on this builder.
 
-        .. warning::
+    .. warning::
 
-            Because this class overrides attribute assignment when extending
-            it care must be taken to only use private or "dunder" attributes
-            and methods.
+        Because this class overrides attribute assignment when extending
+        it care must be taken to only use private or "dunder" attributes
+        and methods.
 
-        Parameters
-        ----------
-        **kwargs
-            Optionally initialize fields during initialization of the builder.
-            These can be changed later and will raise UndefinedFieldError if
-            they are not part of the {dname} dataclass_ `__init__` method.
+    Parameters
+    ----------
+{params}
 
-        Raises
-        ------
-        UndefinedFieldError
-            If you try to assign to a field that is not part of the
-            :paramref:`dataclass`'s `__init__`.
-        MissingFieldError
-            If :func:`build` is called on this builder before all non default
-            fields of the :paramref:`dataclass` are assigned.
+    Raises
+    ------
+    UndefinedFieldError
+        If you try to assign to a field that is not part of the
+        :paramref:`dataclass`'s `__init__`.
+    MissingFieldError
+        If :func:`build` is called on this builder before all non default
+        fields of the :paramref:`dataclass` are assigned.
 
         """)
 
