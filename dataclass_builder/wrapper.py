@@ -213,7 +213,7 @@ class DataclassBuilder:
         """
         args = itertools.chain(
             [self.__dataclass.__name__],
-            (f'{item}={getattr(self, item)}'
+            (f'{item}={repr(getattr(self, item))}'
              for item in self.__settable_fields if hasattr(self, item)))
         return f"{self.__class__.__name__}({', '.join(args)})"
 

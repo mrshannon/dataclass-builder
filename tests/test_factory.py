@@ -88,26 +88,27 @@ def test_order_invariant():
 
 def test_repr():
     PixelCoordBuilder = dataclass_builder(PixelCoord)
-    assert ('PixelCoordBuilder(x=3, y=7)' ==
-            repr(PixelCoordBuilder(x=3, y=7)))
-    assert ('PixelCoordBuilder(x=3, y=7)' ==
-            repr(PixelCoordBuilder(y=7, x=3)))
-    assert ('PixelCoordBuilder(x=3)' ==
-            repr(PixelCoordBuilder(x=3)))
-    assert ('PixelCoordBuilder(y=7)' ==
-            repr(PixelCoordBuilder(y=7)))
+    assert 'PixelCoordBuilder(x=3, y=7)' == repr(PixelCoordBuilder(x=3, y=7))
+    assert 'PixelCoordBuilder(x=3, y=7)' == repr(PixelCoordBuilder(y=7, x=3))
+    assert 'PixelCoordBuilder(x=3)' == repr(PixelCoordBuilder(x=3))
+    assert 'PixelCoordBuilder(y=7)' == repr(PixelCoordBuilder(y=7))
+
+
+def test_repr_with_strings():
+    TypesBuilder = dataclass_builder(Types)
+    assert ("TypesBuilder(int_=1, float_=1.0, str_='one')" ==
+            repr(TypesBuilder(1, 1.0, 'one')))
+    assert ("TypesBuilder(float_=1.0, str_='one')" ==
+            repr(TypesBuilder(float_=1.0, str_='one')))
+    assert "TypesBuilder(str_='one')" == repr(TypesBuilder(str_='one'))
 
 
 def test_custom_name():
     PixelBuilder = dataclass_builder(PixelCoord, name='PixelBuilder')
-    assert ('PixelBuilder(x=3, y=7)' ==
-            repr(PixelBuilder(x=3, y=7)))
-    assert ('PixelBuilder(x=3, y=7)' ==
-            repr(PixelBuilder(y=7, x=3)))
-    assert ('PixelBuilder(x=3)' ==
-            repr(PixelBuilder(x=3)))
-    assert ('PixelBuilder(y=7)' ==
-            repr(PixelBuilder(y=7)))
+    assert 'PixelBuilder(x=3, y=7)' == repr(PixelBuilder(x=3, y=7))
+    assert 'PixelBuilder(x=3, y=7)' == repr(PixelBuilder(y=7, x=3))
+    assert 'PixelBuilder(x=3)' == repr(PixelBuilder(x=3))
+    assert 'PixelBuilder(y=7)' == repr(PixelBuilder(y=7))
 
 
 def test_must_be_dataclass():

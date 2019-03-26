@@ -5,7 +5,7 @@ from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                UndefinedFieldError, build)
 from tests.conftest import (PixelCoord, Point, Circle,  # type: ignore
                             NotADataclass, NoFields, NoInitFields,
-                            ExtendedBuilder)
+                            ExtendedBuilder, Types)
 
 
 def test_all_fields_set():
@@ -39,6 +39,15 @@ def test_repr():
             repr(DataclassBuilder(PixelCoord, x=3)))
     assert ('DataclassBuilder(PixelCoord, y=7)' ==
             repr(DataclassBuilder(PixelCoord, y=7)))
+
+
+def test_repr_with_strings():
+    assert ("DataclassBuilder(Types, int_=1, float_=1.0, str_='one')" ==
+            repr(DataclassBuilder(Types, int_=1, float_=1.0, str_='one')))
+    assert ("DataclassBuilder(Types, float_=1.0, str_='one')" ==
+            repr(DataclassBuilder(Types, float_=1.0, str_='one')))
+    assert ("DataclassBuilder(Types, str_='one')" ==
+            repr(DataclassBuilder(Types, str_='one')))
 
 
 def test_must_be_dataclass():
