@@ -97,8 +97,8 @@ Accessing a field of the builder before it is set results in an
 
 
 
-Dedicated Builder (coming soon)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Dedicated Builder
+^^^^^^^^^^^^^^^^^
 
 A dedicated builder can make more sense if used often or when needing to
 document the builder.
@@ -114,9 +114,7 @@ document the builder.
         y: float
         w: float = 1.0
 
-    @dataclass_builder
-    class PointBuilder:
-        pass
+    PointBuilder = dataclass_builder(Point)
 
 Now we can build a point.
 
@@ -126,17 +124,16 @@ Now we can build a point.
     >>> p_builder.x = 5.8
     >>> p_builder.y = 8.1
     >>> p_builder.w = 2.0
-    >>> p = build(p_builder)
+    >>> p = p_builder.build()
     Point(x=5.8, y=8.1, w=2.0)
 
-In addition to providing field values during initialization as with the Builder
-Instance they can also be provided in the decorator.
+The `build` function can be used instead of the method and must be used if the
+dataclass has a `build` field.
 
-.. code-block::
+.. code-block:: python
 
-    @dataclass_builder(w=100)
-    class PointBuilder:
-        pass
+    >>> p = p_builder.build()
+    Point(x=5.8, y=8.1, w=2.0)
 
 The following two statements are mostly equivalent, with the exception of
 documentation and type.

@@ -1,5 +1,99 @@
 """Create dataclass_ builders for specific dataclasses.
 
+Examples
+--------
+Using specialized builders allows for better documentation and type checking
+than using generic builders.
+
+.. testcode::
+
+    from dataclasses import dataclass
+    from dataclass_builder import dataclass_builder, REQUIRED, OPTIONAL
+
+    @dataclass
+    class Point:
+        x: float
+        y: float
+        w: float = 1.0
+
+    PointBuilder = dataclass_builder(Point)
+
+Now we can build a point.
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.w = 2.0
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=2.0)
+
+Field values can also be provided in the constructor.
+
+.. doctest::
+
+    >>> builder = PointBuilder(w=100)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=100)
+
+Fields with default values in the `dataclass` are optional in the builder.
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=1.0)
+
+Fields that don't have default values in the `dataclass` are not optional.
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Traceback (most recent call last):
+    ...
+    MissingFieldError: field 'x' of dataclass 'Point' is not optional
+
+Fields not defined in the dataclass cannot be set in the builder.
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.z = 3.0
+    Traceback (most recent call last):
+    ...
+    UndefinedFieldError: dataclass 'Point' does not define field 'z'
+
+No exception will be raised for fields beginning with an underscore.
+
+Accessing a field of the builder before it is set gives either the `REQUIRED`
+or `OPTIONAL` constant
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.x
+    REQUIRED
+
+.. doctest::
+
+    >>> builder = PointBuilder()
+    >>> builder.w
+    OPTIONAL
+
+
+.. note::
+
+    If one of the initialisable fields of the dataclass is `build` or `fields`
+    the functional versions instead of the method versions must be used.
+
+
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
 
 """
@@ -20,15 +114,18 @@ __all__ = ['dataclass_builder', 'REQUIRED', 'OPTIONAL']
 
 
 class _MissingType:
-    pass
+    def __repr__(self) -> str:
+        return 'MISSING'
 
 
 class _RequiredType:
-    pass
+    def __repr__(self) -> str:
+        return 'REQUIRED'
 
 
 class _OptionalType:
-    pass
+    def __repr__(self) -> str:
+        return 'OPTIONAL'
 
 
 MISSING = _MissingType()
