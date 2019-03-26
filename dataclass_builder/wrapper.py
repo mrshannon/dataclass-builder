@@ -152,8 +152,8 @@ class DataclassBuilder:
 
             This will pass through all attributes beginning with an underscore.
             If this is a valid field of the dataclass_ it will still be built
-            correctly but UndefinedFieldError will not be thrown for attributes
-            beginning with an underscore.
+            correction but UndefinedFieldError will not be thrown for
+            attributes beginning with an underscore.
 
             If you need the exception to be thrown then set the field in the
             constructor.
@@ -173,7 +173,6 @@ class DataclassBuilder:
             dataclass_.  If :paramref:`item` is private (begins with an
             underscore) or is a "dunder" then this exception will not
             be raised.
-
         """
         if item.startswith('_') or item in self.__settable_fields:
             self.__dict__[item] = value
@@ -185,30 +184,16 @@ class DataclassBuilder:
     def __repr__(self) -> str:
         """Print a representation of the builder.
 
-        Examples
-        --------
-        .. testcode::
-
-            from dataclasses import dataclass
-            from dataclass_builder import DataclassBuilder, build, fields
-
-            @dataclass
-            class Point:
-                x: float
-                y: float
-                w: float = 1.0
-
         >>> DataclassBuilder(Point, x=4.0, w=2.0)
         DataclassBuilder(Point, x=4.0, w=2.0)
 
         Returns
         -------
-            String representation that can be used to construct this builder
-            instance.
+            String representation that can be used to construct this builder.
         """
         args = itertools.chain(
             [self.__dataclass.__name__],
-            (f'{item}={repr(getattr(self, item))}'
+            (f'{item}={getattr(self, item)}'
              for item in self.__settable_fields if hasattr(self, item)))
         return f"{self.__class__.__name__}({', '.join(args)})"
 
@@ -219,13 +204,13 @@ class DataclassBuilder:
         -------
         dataclass
             An instance of the dataclass_ given in :func:`__init__` using the
-            fields set on this builder instance.
+            fields set on this builder.
 
         Raises
         ------
         MissingFieldError
             If not all of the required fields have been assigned to this
-            builder instance.
+            builder.
 
         """
         for field in self.__required_fields:
