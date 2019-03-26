@@ -152,8 +152,8 @@ class DataclassBuilder:
 
             This will pass through all attributes beginning with an underscore.
             If this is a valid field of the dataclass_ it will still be built
-            correction but UndefinedFieldError will not be thrown for
-            attributes beginning with an underscore.
+            correctly but UndefinedFieldError will not be thrown for attributes
+            beginning with an underscore.
 
             If you need the exception to be thrown then set the field in the
             constructor.
@@ -173,6 +173,7 @@ class DataclassBuilder:
             dataclass_.  If :paramref:`item` is private (begins with an
             underscore) or is a "dunder" then this exception will not
             be raised.
+
         """
         if item.startswith('_') or item in self.__settable_fields:
             self.__dict__[item] = value
@@ -207,7 +208,8 @@ class DataclassBuilder:
 
         Returns
         -------
-            String representation that can be used to construct this builder.
+            String representation that can be used to construct this builder
+            instance.
         """
         args = itertools.chain(
             [self.__dataclass.__name__],
@@ -222,13 +224,13 @@ class DataclassBuilder:
         -------
         dataclass
             An instance of the dataclass_ given in :func:`__init__` using the
-            fields set on this builder.
+            fields set on this builder instance.
 
         Raises
         ------
         MissingFieldError
             If not all of the required fields have been assigned to this
-            builder.
+            builder instance.
 
         """
         for field in self.__required_fields:
