@@ -30,6 +30,7 @@ class Types:
     int_: int
     float_: float
     str_: str = 'hello'
+    message: str = field(default='hello', init=False)
 
 
 class NotADataclass:
@@ -49,3 +50,13 @@ class NoInitFields:
 
 class ExtendedBuilder(DataclassBuilder):
     pass
+
+
+@dataclass
+class Build:
+    build: str
+
+
+@dataclass
+class Fields:
+    fields: str
