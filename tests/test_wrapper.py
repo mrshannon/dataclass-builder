@@ -2,7 +2,7 @@ import pytest  # type: ignore
 
 import dataclasses
 from dataclass_builder import (DataclassBuilder, MissingFieldError,
-                               UndefinedFieldError, build)
+                               UndefinedFieldError, REQUIRED, OPTIONAL, build)
 from tests.conftest import (PixelCoord, Point, Circle,  # type: ignore
                             NotADataclass, NoFields, NoInitFields,
                             ExtendedBuilder, Types)
@@ -159,8 +159,9 @@ def test_handles_dataclass_without_fields():
 
 def test_access_unset_field():
     builder = DataclassBuilder(Point)
-    with pytest.raises(AttributeError):
-        print(builder.x)
+    assert builder.x == REQUIRED
+    assert builder.y == REQUIRED
+    assert builder.w == OPTIONAL
 
 
 def test_access_invalid_field():

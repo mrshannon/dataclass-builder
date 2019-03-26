@@ -241,7 +241,6 @@ def test_handles_dataclass_without_fields():
 
 
 def test_access_unset_field():
-    # TODO: Change how the wrapper works so it behaves like this.
     PointBuilder = dataclass_builder(Point)
     builder = PointBuilder()
     assert builder.x == REQUIRED

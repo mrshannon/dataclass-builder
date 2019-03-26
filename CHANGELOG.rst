@@ -11,6 +11,10 @@ Unreleased_
   such as strings to not display properly.
 * Rewrite :code:`DataclassBuilder` to share functions with the factory
   version :code:`dataclass_builder`.
+* Change how :code:`DataclassBuilder` handles unset fields so that they will
+  be initialized to :code:`REQUIRED` and :code:`OPTIONAL` in order to be
+  compatible with the classes returned from the :code:`dataclass_builder`
+  factory.
 
 
 v0.0.3_ - 2019-03-26

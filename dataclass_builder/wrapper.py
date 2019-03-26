@@ -86,11 +86,11 @@ Accessing a field of the builder before it is set results in an
 """
 
 import dataclasses
-import itertools
 from typing import Any, Mapping, TYPE_CHECKING
 
 from .exceptions import UndefinedFieldError, MissingFieldError
-from ._common import _settable_fields, _required_fields, _optional_fields
+from ._common import (REQUIRED, OPTIONAL, _is_required, _settable_fields,
+                      _required_fields, _optional_fields)
 
 __all__ = ['DataclassBuilder']
 
@@ -139,6 +139,11 @@ class DataclassBuilder:
         self.__dataclass = dataclass
         # store this primarily for efficiency
         self.__settable_fields = _settable_fields(dataclass)
+        for name, field in self.__settable_fields.items():
+            if _is_required(field):
+                setattr(self, name, REQUIRED)
+            else:
+                setattr(self, name, OPTIONAL)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -208,11 +213,12 @@ class DataclassBuilder:
             String representation that can be used to construct this builder
             instance.
         """
-        args = itertools.chain(
-            [self.__dataclass.__name__],
-            (f'{item}={repr(getattr(self, item))}'
-             for item in self.__settable_fields if hasattr(self, item)))
-        return f"{self.__class__.__name__}({', '.join(args)})"
+        args = [self.__dataclass.__qualname__]
+        for name in self.__settable_fields:
+            value = getattr(self, name)
+            if value not in (REQUIRED, OPTIONAL):
+                args.append(f'{name}={repr(value)}')
+        return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build(self) -> Any:
         """Build the underlying dataclass_ using the fields from this builder.
@@ -230,15 +236,16 @@ class DataclassBuilder:
             builder instance.
 
         """
-        for field in _required_fields(self.__dataclass):
-            if field not in self.__dict__:
+        # check for missing required fields
+        for name, field in _required_fields(self.__dataclass).items():
+            if getattr(self, name) == REQUIRED:
                 raise MissingFieldError(
-                    f"field '{field}' of dataclass "
-                    f"'{self.__dataclass.__name__}' is not optional",
-                    self.__dataclass, self._fields()[field])
-        kwargs = {key: value
-                  for key, value in self.__dict__.items()
-                  if key in self.__settable_fields}
+                    f"field '{name}' of dataclass "
+                    f"'{self.__dataclass.__qualname__}' "
+                    "is not optional", self.__dataclass, field)
+        kwargs = {name: getattr(self, name)
+                  for name in self.__settable_fields
+                  if getattr(self, name) != OPTIONAL}
         return self.__dataclass(**kwargs)
 
     def _fields(self, required: bool = True, optional: bool = True) -> \
