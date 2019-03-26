@@ -79,13 +79,8 @@ def test_missing_field():
 
 def test_undefined_field():
     # fields passed in constructor
-    with pytest.raises(UndefinedFieldError):
+    with pytest.raises(TypeError):
         DataclassBuilder(PixelCoord, z=10)
-    try:
-        DataclassBuilder(PixelCoord, z=10)
-    except UndefinedFieldError as err:
-        assert err.dataclass == PixelCoord
-        assert err.field == 'z'
     # fields set by assignment
     builder = DataclassBuilder(PixelCoord)
     with pytest.raises(UndefinedFieldError):
@@ -132,13 +127,8 @@ def test_init_false_field_not_required():
 
 def test_init_false_field_cannot_be_set():
     # fields passed in constructor
-    with pytest.raises(UndefinedFieldError):
+    with pytest.raises(TypeError):
         DataclassBuilder(Circle, radius=3.0, area=10)
-    try:
-        DataclassBuilder(Circle, radius=3.0, area=10)
-    except UndefinedFieldError as err:
-        assert err.dataclass == Circle
-        assert err.field == 'area'
     # fields set by assignment
     builder = DataclassBuilder(Circle)
     with pytest.raises(UndefinedFieldError):

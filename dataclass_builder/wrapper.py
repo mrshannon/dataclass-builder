@@ -145,6 +145,9 @@ class DataclassBuilder:
             else:
                 setattr(self, name, OPTIONAL)
         for key, value in kwargs.items():
+            if key not in self.__settable_fields:
+                raise TypeError(
+                    f"__init__() got an unexpected keyword argument '{key}'")
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
@@ -243,6 +246,7 @@ class DataclassBuilder:
                     f"field '{name}' of dataclass "
                     f"'{self.__dataclass.__qualname__}' "
                     "is not optional", self.__dataclass, field)
+        # build dataclass
         kwargs = {name: getattr(self, name)
                   for name in self.__settable_fields
                   if getattr(self, name) != OPTIONAL}

@@ -156,7 +156,6 @@ def test_missing_field():
 def test_undefined_field():
     PixelCoordBuilder = dataclass_builder(PixelCoord)
     # fields passed in constructor
-    # TODO: Make this raise an UndefinedFieldError
     with pytest.raises(TypeError):
         PixelCoordBuilder(z=10)
     # fields set by assignment
@@ -215,7 +214,6 @@ def test_init_false_field_not_required():
 def test_init_false_field_cannot_be_set():
     CircleBuilder = dataclass_builder(Circle)
     # fields passed in constructor
-    # TODO: Make this raise an UndefinedFieldError
     with pytest.raises(TypeError):
         CircleBuilder(radius=3.0, area=10)
     # fields set by assignment
