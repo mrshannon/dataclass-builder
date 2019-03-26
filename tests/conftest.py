@@ -50,3 +50,13 @@ class NoInitFields:
 
 class ExtendedBuilder(DataclassBuilder):
     pass
+
+
+@dataclass
+class Build:
+    build: str
+
+
+@dataclass
+class Fields:
+    fields: str
