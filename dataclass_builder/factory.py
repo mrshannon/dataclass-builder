@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 else:
     from dataclasses import is_dataclass
 
-
 __all__ = ['dataclass_builder', 'REQUIRED', 'OPTIONAL']
 
 

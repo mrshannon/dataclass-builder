@@ -4,10 +4,11 @@ import dataclasses
 
 from dataclass_builder.factory import _create_fn
 from dataclass_builder import (MissingFieldError, UndefinedFieldError,
-                               REQUIRED, OPTIONAL, dataclass_builder, build)
+                               REQUIRED, OPTIONAL,
+                               dataclass_builder, build, fields)
 from tests.conftest import (Circle, PixelCoord, Point,  # type: ignore
                             NoFields, NoInitFields, NotADataclass,
-                            Build, Fields)
+                            Build, Fields, Types)
 # from tests.conftest import (PixelCoord, Point, Circle, NotADataclass,
 #                             NoFields, NoInitFields, ExtendedBuilder)
 
@@ -250,17 +251,6 @@ def test_access_invalid_field():
         print(builder.i)
 
 
-class ExtendedBuilder(dataclass_builder(Point)):
-    pass
-
-
-def test_class_inheritance():
-    builder = ExtendedBuilder(y=4, w=10)
-    builder.x = 8
-    assert Point(8, 4, 10) == build(builder)
-    assert Point(8, 4, 10) == builder.build()
-
-
 def test_build_field():
     BuildBuilder = dataclass_builder(Build)
     builder = BuildBuilder(build='taken')
@@ -272,3 +262,147 @@ def test_fields_field():
     FieldsBuilder = dataclass_builder(Fields)
     builder = FieldsBuilder(fields='taken')
     assert builder.fields == 'taken'
+    fields_ = fields(builder)
+    assert ['fields'] == list(fields_.keys())
+    assert ['fields'] == [f.name for f in fields_.values()]
+    assert [str] == [f.type for f in fields_.values()]
+
+
+def test_fields_returns_settable_fields():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    fields_ = fields(PixelCoordBuilder())
+    assert fields_ == PixelCoordBuilder().fields()
+    assert ['x', 'y'] == list(fields_.keys())
+    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert [int, int] == [f.type for f in fields_.values()]
+
+    PointBuilder = dataclass_builder(Point)
+    fields_ = fields(PointBuilder())
+    assert fields_ == PointBuilder().fields()
+    assert ['x', 'y', 'w'] == list(fields_.keys())
+    assert ['x', 'y', 'w'] == [f.name for f in fields_.values()]
+    assert [float, float, float] == [f.type for f in fields_.values()]
+
+    CircleBuilder = dataclass_builder(Circle)
+    fields_ = fields(CircleBuilder())
+    assert fields_ == CircleBuilder().fields()
+    assert ['radius'] == list(fields_.keys())
+    assert ['radius'] == [f.name for f in fields_.values()]
+    assert [float] == [f.type for f in fields_.values()]
+
+    TypesBuilder = dataclass_builder(Types)
+    fields_ = fields(TypesBuilder())
+    assert fields_ == TypesBuilder().fields()
+    assert ['int_', 'float_', 'str_'] == list(fields_.keys())
+    assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
+    assert [int, float, str] == [f.type for f in fields_.values()]
+
+
+def test_fields_returns_required_fields():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    fields_ = fields(PixelCoordBuilder(), optional=False)
+    assert fields_ == PixelCoordBuilder().fields(optional=False)
+    assert ['x', 'y'] == list(fields_.keys())
+    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert [int, int] == [f.type for f in fields_.values()]
+
+    PointBuilder = dataclass_builder(Point)
+    fields_ = fields(PointBuilder(), optional=False)
+    assert fields_ == PointBuilder().fields(optional=False)
+    assert ['x', 'y'] == list(fields_.keys())
+    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert [float, float] == [f.type for f in fields_.values()]
+
+    CircleBuilder = dataclass_builder(Circle)
+    fields_ = fields(CircleBuilder(), optional=False)
+    assert fields_ == CircleBuilder().fields(optional=False)
+    assert ['radius'] == list(fields_.keys())
+    assert ['radius'] == [f.name for f in fields_.values()]
+    assert [float] == [f.type for f in fields_.values()]
+
+    TypesBuilder = dataclass_builder(Types)
+    fields_ = fields(TypesBuilder(), optional=False)
+    assert fields_ == TypesBuilder().fields(optional=False)
+    assert ['int_', 'float_'] == list(fields_.keys())
+    assert ['int_', 'float_'] == [f.name for f in fields_.values()]
+    assert [int, float] == [f.type for f in fields_.values()]
+
+
+def test_fields_returns_optional_fields():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    fields_ = fields(PixelCoordBuilder(), required=False)
+    assert fields_ == PixelCoordBuilder().fields(required=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+    PointBuilder = dataclass_builder(Point)
+    fields_ = fields(PointBuilder(), required=False)
+    assert fields_ == PointBuilder().fields(required=False)
+    assert ['w'] == list(fields_.keys())
+    assert ['w'] == [f.name for f in fields_.values()]
+    assert [float] == [f.type for f in fields_.values()]
+
+    CircleBuilder = dataclass_builder(Circle)
+    fields_ = fields(CircleBuilder(), required=False)
+    assert fields_ == CircleBuilder().fields(required=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+    TypesBuilder = dataclass_builder(Types)
+    fields_ = fields(TypesBuilder(), required=False)
+    assert fields_ == TypesBuilder().fields(required=False)
+    assert ['str_'] == list(fields_.keys())
+    assert ['str_'] == [f.name for f in fields_.values()]
+    assert [str] == [f.type for f in fields_.values()]
+
+
+def test_fields_returns_no_fields():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    fields_ = fields(PixelCoordBuilder(), required=False, optional=False)
+    assert fields_ == PixelCoordBuilder().fields(
+        required=False, optional=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+    PointBuilder = dataclass_builder(Point)
+    fields_ = fields(PointBuilder(), required=False, optional=False)
+    assert fields_ == PointBuilder().fields(required=False, optional=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+    CircleBuilder = dataclass_builder(Circle)
+    fields_ = fields(CircleBuilder(), required=False, optional=False)
+    assert fields_ == CircleBuilder().fields(required=False, optional=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+    TypesBuilder = dataclass_builder(Types)
+    fields_ = fields(TypesBuilder(), required=False, optional=False)
+    assert fields_ == TypesBuilder().fields(required=False, optional=False)
+    assert [] == list(fields_.keys())
+    assert [] == [f.name for f in fields_.values()]
+    assert [] == [f.type for f in fields_.values()]
+
+
+class ExtendedPointBuilder(dataclass_builder(Point)):
+    pass
+
+
+class ExtendedTypesBuilder(dataclass_builder(Types)):
+    pass
+
+
+def test_class_inheritance():
+    builder = ExtendedPointBuilder(y=4, w=10)
+    builder.x = 8
+    assert Point(8, 4, 10) == build(builder)
+    assert Point(8, 4, 10) == builder.build()
+    fields_ = fields(ExtendedTypesBuilder())
+    assert ['int_', 'float_', 'str_'] == list(fields_.keys())
+    assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
+    assert [int, float, str] == [f.type for f in fields_.values()]
