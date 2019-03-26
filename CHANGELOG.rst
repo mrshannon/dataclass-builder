@@ -5,6 +5,8 @@ Changelog
 Unreleased_
 -----------
 
+**BREAKS BACKWARDS COMPATIBILITY**
+
 * Moved :code:`REQUIRED` and :code:`OPTIONAL` constants into :code:`._common`
   with exports at the package level.
 * Fixed bug in :code:`DataclassBuilder.__repr__` causing some types of fields
@@ -15,10 +17,9 @@ Unreleased_
   be initialized to :code:`REQUIRED` and :code:`OPTIONAL` in order to be
   compatible with the classes returned from the :code:`dataclass_builder`
   factory.
-* **BACKWARDS INCOMPATIBLE:** Fields passed in the :code:`__init__` method of
-  :code:`DataclassBuilder` will now raise :code:`TypeError` (instead of
-  :code:`UndefinedFieldError`) the same as classes build with the
-  :code:`dataclass_builder` factory.
+* Fields passed in the :code:`__init__` method of :code:`DataclassBuilder` will
+  now raise :code:`TypeError` (instead of :code:`UndefinedFieldError`) the same
+  as classes build with the :code:`dataclass_builder` factory.
 
 
 v0.0.3_ - 2019-03-26
