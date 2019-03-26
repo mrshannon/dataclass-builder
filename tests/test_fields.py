@@ -1,5 +1,6 @@
 from dataclass_builder import DataclassBuilder, fields
-from tests.conftest import PixelCoord, Point, Circle, Types, ExtendedBuilder
+from tests.conftest import (PixelCoord, Point, Circle, Types,  # type: ignore
+                            ExtendedBuilder)
 
 
 def test_returns_settable_fields():

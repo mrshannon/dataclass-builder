@@ -10,6 +10,8 @@ Unreleased_
 * Moved :code:`build` and :code:`fields` functions to the :code:`.utility`
   submodule with exports at the top level.
 * Moved :code:`DataclassBuilder` to the :code:`.wrapper` submodule.
+* Fixed issue #4 which caused typing errors in code using
+  :code:`DataclassBuilder`.
 
 
 v0.0.2 - 2019-03-12

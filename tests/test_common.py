@@ -3,7 +3,7 @@ from dataclasses import fields
 from dataclass_builder._common import (
     _is_settable, _is_required, _is_optional,
     _settable_fields, _required_fields, _optional_fields)
-from tests.conftest import PixelCoord, Point, Circle, Types
+from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
 
 
 def test_is_settable():

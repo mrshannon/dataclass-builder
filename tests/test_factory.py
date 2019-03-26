@@ -1,5 +1,5 @@
 import pytest  # type: ignore
-from typing import get_type_hints
+from typing import Any, get_type_hints
 import dataclasses
 
 from dataclass_builder.factory import _create_fn, MISSING
@@ -399,11 +399,15 @@ def test_fields_returns_no_fields():
     assert [] == [f.type for f in fields_.values()]
 
 
-class ExtendedPointBuilder(dataclass_builder(Point)):
+_PointBuilder: Any = dataclass_builder(Point, name='_PointBuilder')
+_TypesBuilder: Any = dataclass_builder(Types, name='_TypesBuilder')
+
+
+class ExtendedPointBuilder(_PointBuilder):
     pass
 
 
-class ExtendedTypesBuilder(dataclass_builder(Types)):
+class ExtendedTypesBuilder(_TypesBuilder):
     pass
 
 
