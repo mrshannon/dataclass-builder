@@ -5,6 +5,10 @@ Changelog
 Unreleased_
 -----------
 
+
+v1.1.1_ - 2019-03-27
+--------------------
+
 * Fix bug where the :code:`MISSING` constant was not exported at the package
   level.
 
@@ -83,7 +87,8 @@ v0.0.1 - 2019-03-11
 .. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
 
-.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.0...HEAD
+.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.1...HEAD
+.. _v1.1.1: https://github.com/mrshannon/dataclass-builder/compare/v1.1.0...v1.1.1
 .. _v1.1.0: https://github.com/mrshannon/dataclass-builder/compare/v1.0.1...v1.1.0
 .. _v1.0.1: https://github.com/mrshannon/dataclass-builder/compare/v1.0.0...v1.0.1
 .. _v1.0.0: https://github.com/mrshannon/dataclass-builder/compare/v0.0.3...v1.0.0
