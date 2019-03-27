@@ -1,14 +1,20 @@
-"""Create dataclass_ builders for specific dataclasses.
+"""Create dataclass_ builders for specific dataclasses_.
+
+This module uses a factory to build builder classes that build a specific
+dataclass_.  These builder classes implement the builder pattern and allow
+constructing dataclasses_ over a period of time instead of all at once.
 
 Examples
 --------
-Using specialized builders allows for better documentation and type checking
-than using generic builders.
+Using specialized builders allows for better documentation than the
+:class:`DataclassBuilder` wrapper and allows for type checking because
+annotations are dynamically generated.
 
 .. testcode::
 
     from dataclasses import dataclass
-    from dataclass_builder import dataclass_builder, REQUIRED, OPTIONAL
+    from dataclass_builder import (dataclass_builder, build, fields,
+                                   REQUIRED, OPTIONAL)
 
     @dataclass
     class Point:
@@ -26,6 +32,12 @@ Now we can build a point.
     >>> builder.x = 5.8
     >>> builder.y = 8.1
     >>> builder.w = 2.0
+    >>> build(builder)
+    Point(x=5.8, y=8.1, w=2.0)
+
+As long as the dataclass_ the builder was constructed for does not have a
+`build` field then a `build` method will be generated as well.
+
     >>> builder.build()
     Point(x=5.8, y=8.1, w=2.0)
 
@@ -33,13 +45,16 @@ Field values can also be provided in the constructor.
 
 .. doctest::
 
-    >>> builder = PointBuilder(w=100)
-    >>> builder.x = 5.8
+    >>> builder = PointBuilder(x=5.8, w=100)
     >>> builder.y = 8.1
     >>> builder.build()
     Point(x=5.8, y=8.1, w=100)
 
-Fields with default values in the `dataclass` are optional in the builder.
+.. note::
+
+    Positional arguments are not allowed.
+
+Fields with default values in the dataclass_ are optional in the builder.
 
 .. doctest::
 
@@ -49,7 +64,7 @@ Fields with default values in the `dataclass` are optional in the builder.
     >>> builder.build()
     Point(x=5.8, y=8.1, w=1.0)
 
-Fields that don't have default values in the `dataclass` are not optional.
+Fields that don't have default values in the dataclass_ are not optional.
 
 .. doctest::
 
@@ -64,13 +79,15 @@ Fields not defined in the dataclass cannot be set in the builder.
 
 .. doctest::
 
-    >>> builder = PointBuilder()
     >>> builder.z = 3.0
     Traceback (most recent call last):
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
-No exception will be raised for fields beginning with an underscore.
+.. note::
+
+    No exception will be raised for fields beginning with an underscore as they
+    are reserved for use by subclasses.
 
 Accessing a field of the builder before it is set gives either the `REQUIRED`
 or `OPTIONAL` constant
@@ -80,29 +97,53 @@ or `OPTIONAL` constant
     >>> builder = PointBuilder()
     >>> builder.x
     REQUIRED
-
-.. doctest::
-
-    >>> builder = PointBuilder()
     >>> builder.w
     OPTIONAL
 
+The `fields` method can be used to retrieve a dictionary of settable fields for
+the builder.  This is a mapping of field names to :class:`dataclasses.Field`
+objects from which extra data can be retrieved such as the type of the data
+stored in the field.
+
+.. doctest::
+
+    >>> list(builder.fields().keys())
+    ['x', 'y', 'w']
+    >>> [f.type.__name__ for f in builder.fields().values()]
+    ['float', 'float', 'float']
+
+A subset of the fields can be also be retrieved, for instance, to only get
+required fields:
+
+.. doctest::
+
+    >>> list(builder.fields(optional=False).keys())
+    ['x', 'y']
+
+or only the optional fields.
+
+.. doctest::
+
+    >>> list(builder.fields(required=False).keys())
+    ['w']
 
 .. note::
 
-    If one of the initialisable fields of the dataclass is `build` or `fields`
-    the functional versions instead of the method versions must be used.
+    If the underlying dataclass_ has a field named `fields` this method will
+    not be generated and instead the :func:`fields` function should be used
+    instead.
 
 
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
+.. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 
 """
 
 from typing import (Any, Callable, Dict, Mapping, MutableMapping, Optional,
                     Sequence, TYPE_CHECKING, cast)
 
-from ._common import (_settable_fields, _required_fields, _optional_fields,
-                      _is_required)
+from ._common import (REQUIRED, OPTIONAL, _is_required,
+                      _settable_fields, _required_fields, _optional_fields)
 from .exceptions import UndefinedFieldError, MissingFieldError
 
 if TYPE_CHECKING:
@@ -110,7 +151,7 @@ if TYPE_CHECKING:
 else:
     from dataclasses import is_dataclass
 
-__all__ = ['dataclass_builder', 'REQUIRED', 'OPTIONAL']
+__all__ = ['dataclass_builder']
 
 
 class _MissingType:
@@ -118,34 +159,20 @@ class _MissingType:
         return 'MISSING'
 
 
-class _RequiredType:
-    def __repr__(self) -> str:
-        return 'REQUIRED'
-
-
-class _OptionalType:
-    def __repr__(self) -> str:
-        return 'OPTIONAL'
-
-
-MISSING = _MissingType()
-
-REQUIRED = _RequiredType()
-
-OPTIONAL = _OptionalType()
+_MISSING = _MissingType()
 
 
 # copied (and modified) from dataclasses._create_fn to avoid dependency on
 # private functions in dataclasses
 def _create_fn(name: str, args: Sequence[str], body: Sequence[str],
                env: Optional[Dict[str, Any]] = None, *,
-               return_type: Any = MISSING) \
+               return_type: Any = _MISSING) \
         -> Callable[..., Any]:
     locals_: MutableMapping[str, Any] = {}
     return_annotation = ''
     if env is None:
         env = {}
-    if return_type is not MISSING:
+    if return_type is not _MISSING:
         env['_return_type'] = return_type
         return_annotation = '->_return_type'
     args = ', '.join(args)
@@ -167,15 +194,18 @@ def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
     def is_required(field: 'Field[Any]') -> str:
         return 'REQUIRED' if _is_required(field) else 'OPTIONAL'
 
-    args = ['self'] + [f'{name}: _{name}_type = {is_required(field)}'
-                       for name, field in fields.items()]
+    if fields:
+        args = ['self', '*'] + [f'{name}: _{name}_type = {is_required(field)}'
+                                for name, field in fields.items()]
+    else:
+        args = ['self']
     body = [f'self.{name}: _{name}_type = {name}' for name in fields]
     body = ['self.__initialized = False'] + body + [
         'self.__initialized = True']
     return _create_fn('__init__', args, body, env, return_type=None)
 
 
-def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
+def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> type:
     """Create a new builder class that is specialized to the given dataclass_.
 
     Parameters

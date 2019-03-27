@@ -19,7 +19,7 @@ init:
 	@pip install -q -r dev-requirements.txt
 
 todo:
-	@grep -roI --color 'TODO:.*' $(module)
+	@grep -roIn --color 'TODO:.*' $(module) tests docs
 
 test: check
 	@python -m pytest -v --cov=$(module) --cov-branch

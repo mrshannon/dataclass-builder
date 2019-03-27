@@ -12,101 +12,47 @@ Create instances of Python dataclasses with the builder pattern.
 |status|
 
 
+
+Requirements
+------------
+
+* Python 3.6 or greater
+* dataclasses_ if using Python 3.6
+
+
+
+Installation
+------------
+
+`dataclass-builder` is on PyPI_ so the easiest way to install it is:
+
+.. code-block:: text
+
+    $ pip install dataclass-builder
+
+
+
 Usage
 -----
 
 There are two ways to use `dataclass-builder`.  Via a builder instance or by
-creating a dedicated builder.
+creating a dedicated builder.  The latter is recommended when repeated building
+of a given dataclass is desired or when docstrings and type checking are
+important.
 
-Builder Instance
-^^^^^^^^^^^^^^^^
 
-Using a builder instance is the fastest way to get started with
-`dataclass-builder`.
+Dedicated Builder (builder factory)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using specialized builders allows for better documentation than the
+`DataclassBuilder` wrapper and allows for type checking because annotations are
+dynamically generated.
 
 .. code-block:: python
 
     from dataclasses import dataclass
-    from dataclass_builder import DataclassBuilder, build, fields
-
-    @dataclass
-    class Point:
-        x: float
-        y: float
-        w: float = 1.0
-
-Now we can build a point.
-
-.. code-block:: python
-
-    >>> p1_builder = DataclassBuilder(Point)
-    >>> p1_builder.x = 5.8
-    >>> p1_builder.y = 8.1
-    >>> p1_builder.w = 2.0
-    >>> p1 = build(p1_builder)
-    Point(x=5.8, y=8.1, w=2.0)
-
-Field values can also be provided in the constructor.
-
-.. code-block:: python
-
-    >>> p3_builder = DataclassBuilder(Point, w=100)
-    >>> p3_builder.x = 5.8
-    >>> p3_builder.y = 8.1
-    >>> p3 = build(p3_builder)
-    Point(x=5.8, y=8.1, w=100)
-
-Fields with default values in the `dataclass` are optional in the builder.
-
-.. code-block:: python
-
-    >>> p4_builder = DataclassBuilder(Point)
-    >>> p4_builder.x = 5.8
-    >>> p4_builder.y = 8.1
-    >>> p4 = build(p4_builder)
-    Point(x=5.8, y=8.1, w=1.0)
-
-Fields that don't have default values in the `dataclass` are not optional.
-
-.. code-block:: python
-
-    >>> p5_builder = DataclassBuilder(Point)
-    >>> p5_builder.y = 8.1
-    >>> p5 = build(p5_builder)
-    MissingFieldError: field 'x' of dataclass 'Point' is not optional
-
-Fields not defined in the dataclass cannot be set in the builder.
-
-.. code-block:: python
-
-    >>> p6_builder = DataclassBuilder(Point)
-    >>> p6_builder.z = 3.0
-    UndefinedFieldError: dataclass 'Point' does not define field 'z'
-
-No exception will be raised for fields beginning with an underscore.
-
-Accessing a field of the builder before it is set results in an
-`AttributeError`.
-
-.. code-block:: python
-
-    >>> p8_builder = DataclassBuilder(Point)
-    >>> p8.x
-    AttributeError: 'DataclassBuilder' object has no attribute 'x'
-
-
-
-
-Dedicated Builder
-^^^^^^^^^^^^^^^^^
-
-A dedicated builder can make more sense if used often or when needing to
-document the builder.
-
-.. code-block:: python
-
-    from dataclasses
-    from dataclass_builder import dataclass_builder, build
+    from dataclass_builder import (dataclass_builder, build, fields,
+                                   REQUIRED, OPTIONAL)
 
     @dataclass
     class Point:
@@ -120,55 +66,232 @@ Now we can build a point.
 
 .. code-block:: python
 
-    >>> p_builder = PointBuilder()
-    >>> p_builder.x = 5.8
-    >>> p_builder.y = 8.1
-    >>> p_builder.w = 2.0
-    >>> p = p_builder.build()
+    >>> builder = PointBuilder()
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.w = 2.0
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=2.0)
 
-The `build` function can be used instead of the method and must be used if the
-dataclass has a `build` field.
+As long as the dataclass_ the builder was constructed for does not have a
+`build` field then a `build` method will be generated as well.
+
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=2.0)
+
+Field values can also be provided in the constructor.
 
 .. code-block:: python
 
-    >>> p = p_builder.build()
-    Point(x=5.8, y=8.1, w=2.0)
+    >>> builder = PointBuilder(x=5.8, w=100)
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=100)
 
-The following two statements are mostly equivalent, with the exception of
-documentation and type.
+.. note::
+
+    Positional arguments are not allowed.
+
+Fields with default values in the dataclass_ are optional in the builder.
 
 .. code-block:: python
 
-    PointBuilder()
-    DataclassBuilder(Point)
+    >>> builder = PointBuilder()
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Point(x=5.8, y=8.1, w=1.0)
 
-Therefore, see the section on *Builder Instance* for further documentation.
+Fields that don't have default values in the dataclass_ are not optional.
+
+.. code-block:: python
+
+    >>> builder = PointBuilder()
+    >>> builder.y = 8.1
+    >>> builder.build()
+    Traceback (most recent call last):
+    ...
+    MissingFieldError: field 'x' of dataclass 'Point' is not optional
+
+Fields not defined in the dataclass cannot be set in the builder.
+
+.. code-block:: python
+
+    >>> builder.z = 3.0
+    Traceback (most recent call last):
+    ...
+    UndefinedFieldError: dataclass 'Point' does not define field 'z'
+
+.. note::
+
+    No exception will be raised for fields beginning with an underscore as they
+    are reserved for use by subclasses.
+
+Accessing a field of the builder before it is set gives either the `REQUIRED`
+or `OPTIONAL` constant
+
+.. code-block:: python
+
+    >>> builder = PointBuilder()
+    >>> builder.x
+    REQUIRED
+    >>> builder.w
+    OPTIONAL
+
+The `fields` method can be used to retrieve a dictionary of settable fields for
+the builder.  This is a mapping of field names to `dataclasses.Field` objects
+from which extra data can be retrieved such as the type of the data stored in
+the field.
+
+.. code-block:: python
+
+    >>> list(builder.fields().keys())
+    ['x', 'y', 'w']
+    >>> [f.type.__name__ for f in builder.fields().values()]
+    ['float', 'float', 'float']
+
+A subset of the fields can be also be retrieved, for instance, to only get
+required fields:
+
+.. code-block:: python
+
+    >>> list(builder.fields(optional=False).keys())
+    ['x', 'y']
+
+or only the optional fields.
+
+.. code-block:: python
+
+    >>> list(builder.fields(required=False).keys())
+    ['w']
+
+.. note::
+
+    If the underlying dataclass_ has a field named `fields` this method will
+    not be generated and instead the `fields` function should be used instead.
+
+
+Builder Instance (generic wrapper)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using a builder instance is the fastest way to get started with
+the `dataclass-builder` package.
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from dataclass_builder import (DataclassBuilder, build, fields,
+                                   REQUIRED, OPTIONAL)
+
+    @dataclass
+    class Point:
+        x: float
+        y: float
+        w: float = 1.0
+
+Now we can build a point.
+
+.. code-block:: python
+
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.w = 2.0
+    >>> build(builder)
+    Point(x=5.8, y=8.1, w=2.0)
+
+Field values can also be provided in the constructor.
+
+.. code-block:: python
+
+    >>> builder = DataclassBuilder(Point, x=5.8, w=100)
+    >>> builder.y = 8.1
+    >>> build(builder)
+    Point(x=5.8, y=8.1, w=100)
+
+.. note::
+
+    Positional arguments are not allowed, except for the dataclass_ itself.
+
+Fields with default values in the dataclass_ are optional in the builder.
+
+.. code-block:: python
+
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> build(builder)
+    Point(x=5.8, y=8.1, w=1.0)
+
+Fields that don't have default values in the dataclass_ are not optional.
+
+.. code-block:: python
+
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.y = 8.1
+    >>> build(builder)
+    Traceback (most recent call last):
+    ...
+    MissingFieldError: field 'x' of dataclass 'Point' is not optional
+
+Fields not defined in the dataclass cannot be set in the builder.
+
+.. code-block:: python
+
+    >>> builder.z = 3.0
+    Traceback (most recent call last):
+    ...
+    UndefinedFieldError: dataclass 'Point' does not define field 'z'
+
+.. note::
+
+    No exception will be raised for fields beginning with an underscore as they
+    are reserved for use by subclasses.
+
+Accessing a field of the builder before it is set gives either the `REQUIRED`
+or `OPTIONAL` constant
+
+.. code-block:: python
+
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x
+    REQUIRED
+    >>> builder.w
+    OPTIONAL
+
+The `fields` function can be used to retrieve a dictionary of settable fields
+for the builder.  This is a mapping of field names to `dataclasses.Field`
+objects from which extra data can be retrieved such as the type of the data
+stored in the field.
+
+.. code-block:: python
+
+    >>> list(fields(builder).keys())
+    ['x', 'y', 'w']
+    >>> [f.type.__name__ for f in fields(builder).values()]
+    ['float', 'float', 'float']
+
+A subset of the fields can be also be retrieved, for instance, to only get
+required fields:
+
+.. code-block:: python
+
+    >>> list(fields(builder, optional=False).keys())
+    ['x', 'y']
+
+or only the optional fields.
+
+.. code-block:: python
+
+    >>> list(fields(builder, required=False).keys())
+    ['w']
 
 
 
 
-Requirements
-------------
-
-* Python 3.6 or greater
-* dataclasses_ if using Python 3.6
 
 
-
-
-Installation
-------------
-
-`dataclass-builder` is on PyPI_ so the best way to install it is:
-
-.. code-block:: text
-
-    $ pip install dataclass-builder
-
-
-
-
+.. _dataclass: https://github.com/ericvsmith/dataclasses
 .. _dataclasses: https://github.com/ericvsmith/dataclasses
 .. _PyPI: https://pypi.org/
 

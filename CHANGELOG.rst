@@ -5,6 +5,25 @@ Changelog
 Unreleased_
 -----------
 
+**BREAKS BACKWARDS COMPATIBILITY**
+
+* Moved :code:`REQUIRED` and :code:`OPTIONAL` constants into :code:`._common`
+  with exports at the package level.
+* Fixed bug in :code:`DataclassBuilder.__repr__` causing some types of fields
+  such as strings to not display properly.
+* Rewrite :code:`DataclassBuilder` to share functions with the factory
+  version :code:`dataclass_builder`.
+* Change how :code:`DataclassBuilder` handles unset fields so that they will
+  be initialized to :code:`REQUIRED` and :code:`OPTIONAL` in order to be
+  compatible with the classes returned from the :code:`dataclass_builder`
+  factory.
+* Fields passed in the :code:`__init__` method of :code:`DataclassBuilder` will
+  now raise :code:`TypeError` (instead of :code:`UndefinedFieldError`) the same
+  as classes build with the :code:`dataclass_builder` factory.
+* Disabled positional arguments for builders generated with the
+  :code:`dataclass_builder` factory.
+* Fixed documentation mismatches.  The documentation both in the README and in
+  the module docstrings properly reflect the API.
 
 
 v0.0.3_ - 2019-03-26

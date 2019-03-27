@@ -6,8 +6,9 @@
 from .exceptions import (DataclassBuilderError, UndefinedFieldError,
                          MissingFieldError)
 from .wrapper import DataclassBuilder
-from .factory import dataclass_builder, REQUIRED, OPTIONAL
+from .factory import dataclass_builder
 from .utility import build, fields
+from ._common import REQUIRED, OPTIONAL
 
 __version__ = '0.0.3'
 

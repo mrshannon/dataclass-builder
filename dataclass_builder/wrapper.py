@@ -1,14 +1,18 @@
-"""Create instances of dataclasses with the builder pattern.
+"""Create instances of dataclasses_ with the builder pattern.
+
+This module uses a generic wrapper that becomes specialized at initialization
+into a builder instance that can build a given dataclass_.
 
 Examples
 --------
 Using a builder instance is the fastest way to get started with
-`dataclass-builder`.
+the `dataclass-builder` package.
 
 .. testcode::
 
     from dataclasses import dataclass
-    from dataclass_builder import DataclassBuilder, build, fields
+    from dataclass_builder import (DataclassBuilder, build, fields,
+                                   REQUIRED, OPTIONAL)
 
     @dataclass
     class Point:
@@ -20,40 +24,43 @@ Now we can build a point.
 
 .. doctest::
 
-    >>> p1_builder = DataclassBuilder(Point)
-    >>> p1_builder.x = 5.8
-    >>> p1_builder.y = 8.1
-    >>> p1_builder.w = 2.0
-    >>> build(p1_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.w = 2.0
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=2.0)
 
 Field values can also be provided in the constructor.
 
 .. doctest::
 
-    >>> p3_builder = DataclassBuilder(Point, w=100)
-    >>> p3_builder.x = 5.8
-    >>> p3_builder.y = 8.1
-    >>> build(p3_builder)
+    >>> builder = DataclassBuilder(Point, x=5.8, w=100)
+    >>> builder.y = 8.1
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=100)
 
-Fields with default values in the `dataclass` are optional in the builder.
+.. note::
+
+    Positional arguments are not allowed, except for the dataclass_ itself.
+
+Fields with default values in the dataclass_ are optional in the builder.
 
 .. doctest::
 
-    >>> p4_builder = DataclassBuilder(Point)
-    >>> p4_builder.x = 5.8
-    >>> p4_builder.y = 8.1
-    >>> build(p4_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=1.0)
 
-Fields that don't have default values in the `dataclass` are not optional.
+Fields that don't have default values in the dataclass_ are not optional.
 
 .. doctest::
 
-    >>> p5_builder = DataclassBuilder(Point)
-    >>> p5_builder.y = 8.1
-    >>> build(p5_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.y = 8.1
+    >>> build(builder)
     Traceback (most recent call last):
     ...
     MissingFieldError: field 'x' of dataclass 'Point' is not optional
@@ -62,35 +69,66 @@ Fields not defined in the dataclass cannot be set in the builder.
 
 .. doctest::
 
-    >>> p6_builder = DataclassBuilder(Point)
-    >>> p6_builder.z = 3.0
+    >>> builder.z = 3.0
     Traceback (most recent call last):
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
-No exception will be raised for fields beginning with an underscore.
+.. note::
 
-Accessing a field of the builder before it is set results in an
-`AttributeError`.
+    No exception will be raised for fields beginning with an underscore as they
+    are reserved for use by subclasses.
+
+Accessing a field of the builder before it is set gives either the `REQUIRED`
+or `OPTIONAL` constant
 
 .. doctest::
 
-    >>> p8_builder = DataclassBuilder(Point)
-    >>> p8_builder.x
-    Traceback (most recent call last):
-    ...
-    AttributeError: 'DataclassBuilder' object has no attribute 'x'
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x
+    REQUIRED
+    >>> builder.w
+    OPTIONAL
+
+The :func:`fields` function can be used to retrieve a dictionary of settable
+fields for the builder.  This is a mapping of field names to
+:class:`dataclasses.Field` objects from which extra data can be retrieved such
+as the type of the data stored in the field.
+
+.. doctest::
+
+    >>> list(fields(builder).keys())
+    ['x', 'y', 'w']
+    >>> [f.type.__name__ for f in fields(builder).values()]
+    ['float', 'float', 'float']
+
+A subset of the fields can be also be retrieved, for instance, to only get
+required fields:
+
+.. doctest::
+
+    >>> list(fields(builder, optional=False).keys())
+    ['x', 'y']
+
+or only the optional fields.
+
+.. doctest::
+
+    >>> list(fields(builder, required=False).keys())
+    ['w']
 
 
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
+.. _dataclasses: https://docs.python.org/3/library/dataclasses.html
+
 """
 
 import dataclasses
-import itertools
 from typing import Any, Mapping, TYPE_CHECKING
 
 from .exceptions import UndefinedFieldError, MissingFieldError
-from ._common import _is_required
+from ._common import (REQUIRED, OPTIONAL, _is_required, _settable_fields,
+                      _required_fields, _optional_fields)
 
 __all__ = ['DataclassBuilder']
 
@@ -137,12 +175,17 @@ class DataclassBuilder:
         if not dataclasses.is_dataclass(dataclass):
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
-        fields_ = dataclasses.fields(self.__dataclass)
-        self.__settable_fields = [
-            field.name for field in fields_ if field.init]
-        self.__required_fields = [
-            field.name for field in fields_ if _is_required(field)]
+        # store this primarily for efficiency
+        self.__settable_fields = _settable_fields(dataclass)
+        for name, field in self.__settable_fields.items():
+            if _is_required(field):
+                setattr(self, name, REQUIRED)
+            else:
+                setattr(self, name, OPTIONAL)
         for key, value in kwargs.items():
+            if key not in self.__settable_fields:
+                raise TypeError(
+                    f"__init__() got an unexpected keyword argument '{key}'")
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
@@ -152,8 +195,8 @@ class DataclassBuilder:
 
             This will pass through all attributes beginning with an underscore.
             If this is a valid field of the dataclass_ it will still be built
-            correction but UndefinedFieldError will not be thrown for
-            attributes beginning with an underscore.
+            correctly but UndefinedFieldError will not be thrown for attributes
+            beginning with an underscore.
 
             If you need the exception to be thrown then set the field in the
             constructor.
@@ -173,6 +216,7 @@ class DataclassBuilder:
             dataclass_.  If :paramref:`item` is private (begins with an
             underscore) or is a "dunder" then this exception will not
             be raised.
+
         """
         if item.startswith('_') or item in self.__settable_fields:
             self.__dict__[item] = value
@@ -207,13 +251,15 @@ class DataclassBuilder:
 
         Returns
         -------
-            String representation that can be used to construct this builder.
+            String representation that can be used to construct this builder
+            instance.
         """
-        args = itertools.chain(
-            [self.__dataclass.__name__],
-            (f'{item}={getattr(self, item)}'
-             for item in self.__settable_fields if hasattr(self, item)))
-        return f"{self.__class__.__name__}({', '.join(args)})"
+        args = [self.__dataclass.__qualname__]
+        for name in self.__settable_fields:
+            value = getattr(self, name)
+            if value not in (REQUIRED, OPTIONAL):
+                args.append(f'{name}={repr(value)}')
+        return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build(self) -> Any:
         """Build the underlying dataclass_ using the fields from this builder.
@@ -222,24 +268,26 @@ class DataclassBuilder:
         -------
         dataclass
             An instance of the dataclass_ given in :func:`__init__` using the
-            fields set on this builder.
+            fields set on this builder instance.
 
         Raises
         ------
         MissingFieldError
             If not all of the required fields have been assigned to this
-            builder.
+            builder instance.
 
         """
-        for field in self.__required_fields:
-            if field not in self.__dict__:
+        # check for missing required fields
+        for name, field in _required_fields(self.__dataclass).items():
+            if getattr(self, name) == REQUIRED:
                 raise MissingFieldError(
-                    f"field '{field}' of dataclass "
-                    f"'{self.__dataclass.__name__}' is not optional",
-                    self.__dataclass, self._fields()[field])
-        kwargs = {key: value
-                  for key, value in self.__dict__.items()
-                  if key in self.__settable_fields}
+                    f"field '{name}' of dataclass "
+                    f"'{self.__dataclass.__qualname__}' "
+                    "is not optional", self.__dataclass, field)
+        # build dataclass
+        kwargs = {name: getattr(self, name)
+                  for name in self.__settable_fields
+                  if getattr(self, name) != OPTIONAL}
         return self.__dataclass(**kwargs)
 
     def _fields(self, required: bool = True, optional: bool = True) -> \
@@ -263,15 +311,7 @@ class DataclassBuilder:
         if not required and not optional:
             return {}
         if required and not optional:
-            return {field.name: field
-                    for field in dataclasses.fields(self.__dataclass)
-                    if field.name in self.__required_fields}
+            return _required_fields(self.__dataclass)
         if not required and optional:
-            optional_fields = {name for name in self.__settable_fields
-                               if name not in self.__required_fields}
-            return {field.name: field
-                    for field in dataclasses.fields(self.__dataclass)
-                    if field.name in optional_fields}
-        return {field.name: field
-                for field in dataclasses.fields(self.__dataclass)
-                if field.name in self.__settable_fields}
+            return _optional_fields(self.__dataclass)
+        return _settable_fields(self.__dataclass)

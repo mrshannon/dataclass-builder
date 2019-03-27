@@ -2,7 +2,7 @@ import pytest  # type: ignore
 from typing import Any, get_type_hints
 import dataclasses
 
-from dataclass_builder.factory import _create_fn, MISSING
+from dataclass_builder.factory import _create_fn, _MISSING
 from dataclass_builder import (MissingFieldError, UndefinedFieldError,
                                REQUIRED, OPTIONAL,
                                dataclass_builder, build, fields)
@@ -12,15 +12,9 @@ from tests.conftest import (Circle, PixelCoord, Point,  # type: ignore
 
 
 def test_constants():
-    assert MISSING == MISSING
-    assert MISSING != REQUIRED
-    assert REQUIRED == REQUIRED
-    assert REQUIRED != OPTIONAL
-    assert OPTIONAL == OPTIONAL
-    assert OPTIONAL != MISSING
-    assert repr(MISSING) == 'MISSING'
-    assert repr(REQUIRED) == 'REQUIRED'
-    assert repr(OPTIONAL) == 'OPTIONAL'
+    assert _MISSING == _MISSING
+    assert _MISSING != 1
+    assert repr(_MISSING) == 'MISSING'
 
 
 def test_create_fn():
@@ -92,28 +86,38 @@ def test_order_invariant():
     assert PixelCoord(9, 1) == builder.build()
 
 
+def test_no_positional_arguments():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    with pytest.raises(TypeError):
+        PixelCoordBuilder(3, 5)
+    NoFieldsBuilder = dataclass_builder(NoFields)
+    with pytest.raises(TypeError):
+        NoFieldsBuilder(3)
+
+
 def test_repr():
     PixelCoordBuilder = dataclass_builder(PixelCoord)
-    assert ('PixelCoordBuilder(x=3, y=7)' ==
-            repr(PixelCoordBuilder(x=3, y=7)))
-    assert ('PixelCoordBuilder(x=3, y=7)' ==
-            repr(PixelCoordBuilder(y=7, x=3)))
-    assert ('PixelCoordBuilder(x=3)' ==
-            repr(PixelCoordBuilder(x=3)))
-    assert ('PixelCoordBuilder(y=7)' ==
-            repr(PixelCoordBuilder(y=7)))
+    assert 'PixelCoordBuilder(x=3, y=7)' == repr(PixelCoordBuilder(x=3, y=7))
+    assert 'PixelCoordBuilder(x=3, y=7)' == repr(PixelCoordBuilder(y=7, x=3))
+    assert 'PixelCoordBuilder(x=3)' == repr(PixelCoordBuilder(x=3))
+    assert 'PixelCoordBuilder(y=7)' == repr(PixelCoordBuilder(y=7))
+
+
+def test_repr_with_strings():
+    TypesBuilder = dataclass_builder(Types)
+    assert ("TypesBuilder(int_=1, float_=1.0, str_='one')" ==
+            repr(TypesBuilder(int_=1, float_=1.0, str_='one')))
+    assert ("TypesBuilder(float_=1.0, str_='one')" ==
+            repr(TypesBuilder(float_=1.0, str_='one')))
+    assert "TypesBuilder(str_='one')" == repr(TypesBuilder(str_='one'))
 
 
 def test_custom_name():
     PixelBuilder = dataclass_builder(PixelCoord, name='PixelBuilder')
-    assert ('PixelBuilder(x=3, y=7)' ==
-            repr(PixelBuilder(x=3, y=7)))
-    assert ('PixelBuilder(x=3, y=7)' ==
-            repr(PixelBuilder(y=7, x=3)))
-    assert ('PixelBuilder(x=3)' ==
-            repr(PixelBuilder(x=3)))
-    assert ('PixelBuilder(y=7)' ==
-            repr(PixelBuilder(y=7)))
+    assert 'PixelBuilder(x=3, y=7)' == repr(PixelBuilder(x=3, y=7))
+    assert 'PixelBuilder(x=3, y=7)' == repr(PixelBuilder(y=7, x=3))
+    assert 'PixelBuilder(x=3)' == repr(PixelBuilder(x=3))
+    assert 'PixelBuilder(y=7)' == repr(PixelBuilder(y=7))
 
 
 def test_must_be_dataclass():
@@ -161,7 +165,6 @@ def test_missing_field():
 def test_undefined_field():
     PixelCoordBuilder = dataclass_builder(PixelCoord)
     # fields passed in constructor
-    # TODO: Make this raise an UndefinedFieldError
     with pytest.raises(TypeError):
         PixelCoordBuilder(z=10)
     # fields set by assignment
@@ -182,7 +185,7 @@ def test_optional_field_not_required():
     assert Point(3.0, 7.0, 1.0) == build(builder)
     assert Point(3.0, 7.0, 1.0) == builder.build()
     # fields set by assignment
-    builder = PointBuilder(Point)
+    builder = PointBuilder()
     builder.x = 9.0
     builder.y = 1.0
     assert Point(9.0, 1.0, 1.0) == build(builder)
@@ -220,7 +223,6 @@ def test_init_false_field_not_required():
 def test_init_false_field_cannot_be_set():
     CircleBuilder = dataclass_builder(Circle)
     # fields passed in constructor
-    # TODO: Make this raise an UndefinedFieldError
     with pytest.raises(TypeError):
         CircleBuilder(radius=3.0, area=10)
     # fields set by assignment
@@ -246,7 +248,6 @@ def test_handles_dataclass_without_fields():
 
 
 def test_access_unset_field():
-    # TODO: Change how the wrapper works so it behaves like this.
     PointBuilder = dataclass_builder(Point)
     builder = PointBuilder()
     assert builder.x == REQUIRED
@@ -424,6 +425,7 @@ def test_class_inheritance():
 
 def test_init_annotations():
     TypesBuilder = dataclass_builder(Types)
-    annotations = get_type_hints(TypesBuilder.__init__)
+    builder = TypesBuilder()
+    annotations = get_type_hints(builder.__init__)
     assert annotations == {
         'int_': int, 'float_': float, 'str_': str, 'return': type(None)}

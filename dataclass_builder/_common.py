@@ -11,8 +11,24 @@ if TYPE_CHECKING:
 else:
     from dataclasses import fields, MISSING
 
-__all__ = ['_is_settable', '_is_required', '_is_optional',
+__all__ = ['REQUIRED', 'OPTIONAL',
+           '_is_settable', '_is_required', '_is_optional',
            '_settable_fields', '_required_fields', '_optional_fields']
+
+
+class _RequiredType:
+    def __repr__(self) -> str:
+        return 'REQUIRED'
+
+
+class _OptionalType:
+    def __repr__(self) -> str:
+        return 'OPTIONAL'
+
+
+REQUIRED = _RequiredType()
+
+OPTIONAL = _OptionalType()
 
 
 def _is_settable(field: 'Field[Any]') -> bool:
