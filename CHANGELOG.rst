@@ -22,6 +22,8 @@ Unreleased_
   as classes build with the :code:`dataclass_builder` factory.
 * Disabled positional arguments for builders generated with the
   :code:`dataclass_builder` factory.
+* Fixed documentation mismatches.  The documentation both in the README and in
+  the module docstrings properly reflect the API.
 
 
 v0.0.3_ - 2019-03-26
