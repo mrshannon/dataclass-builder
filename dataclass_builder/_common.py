@@ -3,13 +3,8 @@
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
 """
 
-from typing import Any, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Mapping
-    from dataclasses import Field, fields, MISSING
-else:
-    from dataclasses import fields, MISSING
+import dataclasses
+from typing import Any, Mapping
 
 __all__ = ['REQUIRED', 'OPTIONAL',
            '_is_settable', '_is_required', '_is_optional',
@@ -17,21 +12,41 @@ __all__ = ['REQUIRED', 'OPTIONAL',
 
 
 class _RequiredType:
+    """Type of constant to indicate that a field is required."""
+
     def __repr__(self) -> str:
         return 'REQUIRED'
 
 
 class _OptionalType:
+    """Type of constant to indicate that a field is optional."""
+
     def __repr__(self) -> str:
         return 'OPTIONAL'
+
+
+class _MissingType:
+    """Type of constant to indicate that a field is missing.
+
+    Compares True with REQUIRED or OPTIONAL.
+
+    """
+
+    def __repr__(self) -> str:
+        return 'MISSING'
+
+    def __eq__(self, other: Any) -> bool:
+        return other in (REQUIRED, OPTIONAL)
 
 
 REQUIRED = _RequiredType()
 
 OPTIONAL = _OptionalType()
 
+MISSING = _MissingType()
 
-def _is_settable(field: 'Field[Any]') -> bool:
+
+def _is_settable(field: 'dataclasses.Field[Any]') -> bool:
     """Determine if the given :class:`dataclasses.Field` is settable.
 
     Parameters
@@ -48,7 +63,7 @@ def _is_settable(field: 'Field[Any]') -> bool:
     return field.init
 
 
-def _is_required(field: 'Field[Any]') -> bool:
+def _is_required(field: 'dataclasses.Field[Any]') -> bool:
     """Determine if the given :class:`dataclasses.Field` is required.
 
     Parameters
@@ -62,11 +77,11 @@ def _is_required(field: 'Field[Any]') -> bool:
         True if the :paramref:`field` is required, otherwise False.
 
     """
-    return (field.init and field.default == MISSING and
-            field.default_factory == MISSING)  # type: ignore
+    return (field.init and field.default == dataclasses.MISSING and
+            field.default_factory == dataclasses.MISSING)  # type: ignore
 
 
-def _is_optional(field: 'Field[Any]') -> bool:
+def _is_optional(field: 'dataclasses.Field[Any]') -> bool:
     """Determine if the given :class:`dataclasses.Field` is optional.
 
     Parameters
@@ -81,11 +96,11 @@ def _is_optional(field: 'Field[Any]') -> bool:
 
     """
     return (field.init and
-            (field.default != MISSING or
-             field.default_factory != MISSING))  # type: ignore
+            (field.default != dataclasses.MISSING or
+             field.default_factory != dataclasses.MISSING))  # type: ignore
 
 
-def _settable_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
+def _settable_fields(dataclass: Any) -> Mapping[str, 'dataclasses.Field[Any]']:
     """Retrieve all settable fields from a dataclass_.
 
     Parameters
@@ -100,10 +115,12 @@ def _settable_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
         The order will be the same as the order in the dataclass_.
 
     """
-    return {f.name: f for f in fields(dataclass) if _is_settable(f)}
+    return {field.name: field
+            for field in dataclasses.fields(dataclass)
+            if _is_settable(field)}
 
 
-def _required_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
+def _required_fields(dataclass: Any) -> Mapping[str, 'dataclasses.Field[Any]']:
     """Retrieve all required fields from a dataclass_.
 
     Parameters
@@ -118,10 +135,12 @@ def _required_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
         The order will be the same as the order in the dataclass_.
 
     """
-    return {f.name: f for f in fields(dataclass) if _is_required(f)}
+    return {field.name: field
+            for field in dataclasses.fields(dataclass)
+            if _is_required(field)}
 
 
-def _optional_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
+def _optional_fields(dataclass: Any) -> Mapping[str, 'dataclasses.Field[Any]']:
     """Retrieve all optional fields from a dataclass_.
 
     Parameters
@@ -136,4 +155,6 @@ def _optional_fields(dataclass: Any) -> 'Mapping[str, Field[Any]]':
         The order will be the same as the order in the dataclass_.
 
     """
-    return {f.name: f for f in fields(dataclass) if _is_optional(f)}
+    return {field.name: field
+            for field in dataclasses.fields(dataclass)
+            if _is_optional(field)}
