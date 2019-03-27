@@ -1,7 +1,7 @@
 from dataclasses import fields
 
 from dataclass_builder._common import (
-    REQUIRED, OPTIONAL,
+    REQUIRED, OPTIONAL, MISSING,
     _is_settable, _is_required, _is_optional,
     _settable_fields, _required_fields, _optional_fields)
 from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
@@ -14,6 +14,16 @@ def test_constants():
     assert OPTIONAL != REQUIRED
     assert repr(REQUIRED) == 'REQUIRED'
     assert repr(OPTIONAL) == 'OPTIONAL'
+
+
+def test_required_and_optional_are_missing():
+    assert REQUIRED == MISSING
+    assert MISSING == REQUIRED
+    assert OPTIONAL == MISSING
+    assert MISSING == OPTIONAL
+    assert MISSING != 1
+    assert MISSING != 'other'
+    assert repr(MISSING) == 'MISSING'
 
 
 def test_is_settable():

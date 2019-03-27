@@ -142,7 +142,7 @@ or only the optional fields.
 from typing import (Any, Callable, Dict, Mapping, MutableMapping, Optional,
                     Sequence, TYPE_CHECKING, cast)
 
-from ._common import (REQUIRED, OPTIONAL, _is_required,
+from ._common import (REQUIRED, OPTIONAL, MISSING, _is_required,
                       _settable_fields, _required_fields, _optional_fields)
 from .exceptions import UndefinedFieldError, MissingFieldError
 
@@ -154,25 +154,17 @@ else:
 __all__ = ['dataclass_builder']
 
 
-class _MissingType:
-    def __repr__(self) -> str:
-        return 'MISSING'
-
-
-_MISSING = _MissingType()
-
-
 # copied (and modified) from dataclasses._create_fn to avoid dependency on
 # private functions in dataclasses
 def _create_fn(name: str, args: Sequence[str], body: Sequence[str],
                env: Optional[Dict[str, Any]] = None, *,
-               return_type: Any = _MISSING) \
+               return_type: Any = MISSING) \
         -> Callable[..., Any]:
     locals_: MutableMapping[str, Any] = {}
     return_annotation = ''
     if env is None:
         env = {}
-    if return_type is not _MISSING:
+    if return_type is not MISSING:
         env['_return_type'] = return_type
         return_annotation = '->_return_type'
     args = ', '.join(args)

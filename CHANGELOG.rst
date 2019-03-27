@@ -5,11 +5,14 @@ Changelog
 Unreleased_
 -----------
 
+* Make :code:`MISSING` constant comparable (True) with :code:`REQUIRED` and
+  :code:`OPTIONAL` constants.
+
+
 v1.0.1_ - 2019-03-26
 --------------------
 
 * Fixed trove classifiers.
-
 
 
 v1.0.0_ - 2019-03-26
