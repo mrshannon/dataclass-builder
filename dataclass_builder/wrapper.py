@@ -1,14 +1,18 @@
-"""Create instances of dataclasses with the builder pattern.
+"""Create instances of dataclasses_ with the builder pattern.
+
+This module uses a generic wrapper that becomes specialized at initialization
+into a builder instance that can build a given dataclass_.
 
 Examples
 --------
 Using a builder instance is the fastest way to get started with
-`dataclass-builder`.
+the `dataclass-builder` package.
 
 .. testcode::
 
     from dataclasses import dataclass
-    from dataclass_builder import DataclassBuilder, build, fields
+    from dataclass_builder import (DataclassBuilder, build, fields,
+                                   REQUIRED, OPTIONAL)
 
     @dataclass
     class Point:
@@ -20,40 +24,43 @@ Now we can build a point.
 
 .. doctest::
 
-    >>> p1_builder = DataclassBuilder(Point)
-    >>> p1_builder.x = 5.8
-    >>> p1_builder.y = 8.1
-    >>> p1_builder.w = 2.0
-    >>> build(p1_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> builder.w = 2.0
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=2.0)
 
 Field values can also be provided in the constructor.
 
 .. doctest::
 
-    >>> p3_builder = DataclassBuilder(Point, w=100)
-    >>> p3_builder.x = 5.8
-    >>> p3_builder.y = 8.1
-    >>> build(p3_builder)
+    >>> builder = DataclassBuilder(Point, x=5.8, w=100)
+    >>> builder.y = 8.1
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=100)
 
-Fields with default values in the `dataclass` are optional in the builder.
+.. note::
+
+    Positional arguments are not allowed, except for the dataclass_ itself.
+
+Fields with default values in the dataclass_ are optional in the builder.
 
 .. doctest::
 
-    >>> p4_builder = DataclassBuilder(Point)
-    >>> p4_builder.x = 5.8
-    >>> p4_builder.y = 8.1
-    >>> build(p4_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x = 5.8
+    >>> builder.y = 8.1
+    >>> build(builder)
     Point(x=5.8, y=8.1, w=1.0)
 
-Fields that don't have default values in the `dataclass` are not optional.
+Fields that don't have default values in the dataclass_ are not optional.
 
 .. doctest::
 
-    >>> p5_builder = DataclassBuilder(Point)
-    >>> p5_builder.y = 8.1
-    >>> build(p5_builder)
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.y = 8.1
+    >>> build(builder)
     Traceback (most recent call last):
     ...
     MissingFieldError: field 'x' of dataclass 'Point' is not optional
@@ -62,27 +69,58 @@ Fields not defined in the dataclass cannot be set in the builder.
 
 .. doctest::
 
-    >>> p6_builder = DataclassBuilder(Point)
-    >>> p6_builder.z = 3.0
+    >>> builder.z = 3.0
     Traceback (most recent call last):
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
-No exception will be raised for fields beginning with an underscore.
+.. note::
 
-Accessing a field of the builder before it is set results in an
-`AttributeError`.
+    No exception will be raised for fields beginning with an underscore as they
+    are reserved for use by subclasses.
+
+Accessing a field of the builder before it is set gives either the `REQUIRED`
+or `OPTIONAL` constant
 
 .. doctest::
 
-    >>> p8_builder = DataclassBuilder(Point)
-    >>> p8_builder.x
-    Traceback (most recent call last):
-    ...
-    AttributeError: 'DataclassBuilder' object has no attribute 'x'
+    >>> builder = DataclassBuilder(Point)
+    >>> builder.x
+    REQUIRED
+    >>> builder.w
+    OPTIONAL
+
+The :func:`fields` function can be used to retrieve a dictionary of settable
+fields for the builder.  This is a mapping of field names to
+:class:`dataclasses.Field` objects from which extra data can be retrieved such
+as the type of the data stored in the field.
+
+.. doctest::
+
+    >>> list(fields(builder).keys())
+    ['x', 'y', 'w']
+    >>> [f.type.__name__ for f in fields(builder).values()]
+    ['float', 'float', 'float']
+
+A subset of the fields can be also be retrieved, for instance, to only get
+required fields:
+
+.. doctest::
+
+    >>> list(fields(builder, optional=False).keys())
+    ['x', 'y']
+
+or only the optional fields.
+
+.. doctest::
+
+    >>> list(fields(builder, required=False).keys())
+    ['w']
 
 
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html
+.. _dataclasses: https://docs.python.org/3/library/dataclasses.html
+
 """
 
 import dataclasses
