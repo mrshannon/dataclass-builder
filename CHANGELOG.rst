@@ -20,6 +20,8 @@ Unreleased_
 * Fields passed in the :code:`__init__` method of :code:`DataclassBuilder` will
   now raise :code:`TypeError` (instead of :code:`UndefinedFieldError`) the same
   as classes build with the :code:`dataclass_builder` factory.
+* Disabled positional arguments for builders generated with the
+  :code:`dataclass_builder` factory.
 
 
 v0.0.3_ - 2019-03-26
