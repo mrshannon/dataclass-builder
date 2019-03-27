@@ -86,6 +86,15 @@ def test_order_invariant():
     assert PixelCoord(9, 1) == builder.build()
 
 
+def test_no_positional_arguments():
+    PixelCoordBuilder = dataclass_builder(PixelCoord)
+    with pytest.raises(TypeError):
+        PixelCoordBuilder(3, 5)
+    NoFieldsBuilder = dataclass_builder(NoFields)
+    with pytest.raises(TypeError):
+        NoFieldsBuilder(3)
+
+
 def test_repr():
     PixelCoordBuilder = dataclass_builder(PixelCoord)
     assert 'PixelCoordBuilder(x=3, y=7)' == repr(PixelCoordBuilder(x=3, y=7))
@@ -97,7 +106,7 @@ def test_repr():
 def test_repr_with_strings():
     TypesBuilder = dataclass_builder(Types)
     assert ("TypesBuilder(int_=1, float_=1.0, str_='one')" ==
-            repr(TypesBuilder(1, 1.0, 'one')))
+            repr(TypesBuilder(int_=1, float_=1.0, str_='one')))
     assert ("TypesBuilder(float_=1.0, str_='one')" ==
             repr(TypesBuilder(float_=1.0, str_='one')))
     assert "TypesBuilder(str_='one')" == repr(TypesBuilder(str_='one'))
@@ -176,7 +185,7 @@ def test_optional_field_not_required():
     assert Point(3.0, 7.0, 1.0) == build(builder)
     assert Point(3.0, 7.0, 1.0) == builder.build()
     # fields set by assignment
-    builder = PointBuilder(Point)
+    builder = PointBuilder()
     builder.x = 9.0
     builder.y = 1.0
     assert Point(9.0, 1.0, 1.0) == build(builder)

@@ -153,8 +153,11 @@ def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
     def is_required(field: 'Field[Any]') -> str:
         return 'REQUIRED' if _is_required(field) else 'OPTIONAL'
 
-    args = ['self'] + [f'{name}: _{name}_type = {is_required(field)}'
-                       for name, field in fields.items()]
+    if fields:
+        args = ['self', '*'] + [f'{name}: _{name}_type = {is_required(field)}'
+                                for name, field in fields.items()]
+    else:
+        args = ['self']
     body = [f'self.{name}: _{name}_type = {name}' for name in fields]
     body = ['self.__initialized = False'] + body + [
         'self.__initialized = True']

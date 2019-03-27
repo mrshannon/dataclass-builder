@@ -31,6 +31,13 @@ def test_order_invariant():
     assert PixelCoord(9, 1) == build(builder)
 
 
+def test_no_positional_arguments():
+    with pytest.raises(TypeError):
+        DataclassBuilder(PixelCoord, 3, 5)  # type: ignore
+    with pytest.raises(TypeError):
+        DataclassBuilder(NoFields, 3)  # type: ignore
+
+
 def test_repr():
     assert ('DataclassBuilder(PixelCoord, x=3, y=7)' ==
             repr(DataclassBuilder(PixelCoord, x=3, y=7)))
