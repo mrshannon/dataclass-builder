@@ -416,6 +416,7 @@ def test_class_inheritance():
 
 def test_init_annotations():
     TypesBuilder = dataclass_builder(Types)
-    annotations = get_type_hints(TypesBuilder.__init__)
+    builder = TypesBuilder()
+    annotations = get_type_hints(builder.__init__)
     assert annotations == {
         'int_': int, 'float_': float, 'str_': str, 'return': type(None)}

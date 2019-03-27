@@ -161,7 +161,7 @@ def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
     return _create_fn('__init__', args, body, env, return_type=None)
 
 
-def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> Any:
+def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> type:
     """Create a new builder class that is specialized to the given dataclass_.
 
     Parameters
