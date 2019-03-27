@@ -5,6 +5,9 @@ Changelog
 Unreleased_
 -----------
 
+* Fix bug where the :code:`MISSING` constant was not exported at the package
+  level.
+
 
 v1.1.0_ - 2019-03-27
 --------------------

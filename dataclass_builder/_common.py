@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Any, Mapping
 
-__all__ = ['REQUIRED', 'OPTIONAL',
+__all__ = ['REQUIRED', 'OPTIONAL', 'MISSING',
            '_is_settable', '_is_required', '_is_optional',
            '_settable_fields', '_required_fields', '_optional_fields']
 
