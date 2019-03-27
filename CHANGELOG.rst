@@ -5,6 +5,12 @@ Changelog
 Unreleased_
 -----------
 
+
+v1.0.0_ - 2019-03-26
+--------------------
+
+*First stable release.*
+
 **BREAKS BACKWARDS COMPATIBILITY**
 
 * Moved :code:`REQUIRED` and :code:`OPTIONAL` constants into :code:`._common`
@@ -61,6 +67,7 @@ v0.0.1 - 2019-03-11
 .. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
 
-.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v0.0.3...HEAD
-.. _v0.0.3: https://github.com/mrshannon/dataclass-builder/compare/v0.0.3...v0.0.3
+.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.0.0...HEAD
+.. _v1.0.0: https://github.com/mrshannon/dataclass-builder/compare/v0.0.3...v1.0.0
+.. _v0.0.3: https://github.com/mrshannon/dataclass-builder/compare/v0.0.2...v0.0.3
 .. _v0.0.2: https://github.com/mrshannon/dataclass-builder/compare/v0.0.1...v0.0.2
