@@ -1,4 +1,5 @@
 import math
+from typing import Sequence, Mapping
 from dataclasses import dataclass, field
 from dataclass_builder import DataclassBuilder
 
@@ -60,3 +61,9 @@ class Build:
 @dataclass
 class Fields:
     fields: str
+
+
+@dataclass
+class Typing:
+    sequence: Sequence[int]
+    mapping: Mapping[str, float]
