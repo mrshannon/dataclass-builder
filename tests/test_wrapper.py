@@ -6,7 +6,7 @@ from dataclass_builder import (DataclassBuilder, MissingFieldError,
                                build, fields)
 from tests.conftest import (PixelCoord, Point, Circle,  # type: ignore
                             NotADataclass, NoFields, NoInitFields,
-                            ExtendedBuilder, Types)
+                            ExtendedBuilder, Types, Typing)
 
 
 def test_all_fields_set():
@@ -265,3 +265,9 @@ def test_class_inheritance():
     assert ['int_', 'float_', 'str_'] == list(fields_.keys())
     assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
     assert [int, float, str] == [f.type for f in fields_.values()]
+
+
+def test_typing_module():
+    builder = DataclassBuilder(Typing)
+    builder.sequence = [1, 2, 3]
+    builder.mapping = {'one': 1.0, 'two': 2.0, 'pi': 3.14}

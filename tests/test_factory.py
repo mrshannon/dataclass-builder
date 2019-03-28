@@ -9,7 +9,7 @@ from dataclass_builder import (MissingFieldError, UndefinedFieldError,
 from dataclass_builder.factory import _create_fn
 from tests.conftest import (Circle, PixelCoord, Point,  # type: ignore
                             NoFields, NoInitFields, NotADataclass,
-                            Build, Fields, Types)
+                            Build, Fields, Types, Typing)
 
 
 def test_create_fn():
@@ -424,3 +424,10 @@ def test_init_annotations():
     annotations = get_type_hints(builder.__init__)
     assert annotations == {
         'int_': int, 'float_': float, 'str_': str, 'return': type(None)}
+
+
+def test_typing_module():
+    TypingBuilder = dataclass_builder(Typing)
+    builder = TypingBuilder()
+    builder.sequence = [1, 2, 3]
+    builder.mapping = {'one': 1.0, 'two': 2.0, 'pi': 3.14}

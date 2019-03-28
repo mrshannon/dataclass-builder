@@ -5,6 +5,9 @@ Changelog
 Unreleased_
 -----------
 
+* Fix issue #9 relating to the :code:`dataclass_builder` factory function
+  failing to handle dataclasses which use types from the :code:`typing` module.
+
 
 v1.1.1_ - 2019-03-27
 --------------------
