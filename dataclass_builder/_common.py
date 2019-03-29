@@ -38,6 +38,9 @@ class _MissingType:
     def __eq__(self, other: Any) -> bool:
         return other in (REQUIRED, OPTIONAL)
 
+    def __ne__(self, other: Any) -> bool:
+        return not self == other
+
 
 REQUIRED = _RequiredType()
 
