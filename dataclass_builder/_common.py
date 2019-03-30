@@ -80,8 +80,8 @@ def _is_required(field: 'dataclasses.Field[Any]') -> bool:
         True if the :paramref:`field` is required, otherwise False.
 
     """
-    return (field.init and field.default == dataclasses.MISSING and
-            field.default_factory == dataclasses.MISSING)  # type: ignore
+    return (field.init and field.default is dataclasses.MISSING and
+            field.default_factory is dataclasses.MISSING)  # type: ignore
 
 
 def _is_optional(field: 'dataclasses.Field[Any]') -> bool:
@@ -99,8 +99,8 @@ def _is_optional(field: 'dataclasses.Field[Any]') -> bool:
 
     """
     return (field.init and
-            (field.default != dataclasses.MISSING or
-             field.default_factory != dataclasses.MISSING))  # type: ignore
+            (field.default is not dataclasses.MISSING) or
+            (field.default_factory is not dataclasses.MISSING))  # type: ignore
 
 
 def _settable_fields(dataclass: Any) -> Mapping[str, 'dataclasses.Field[Any]']:
