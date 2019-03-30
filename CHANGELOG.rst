@@ -7,6 +7,9 @@ Unreleased_
 
 * Fix issue #9 relating to the :code:`dataclass_builder` factory function
   failing to handle dataclasses which use types from the :code:`typing` module.
+* Replace equality checks with identity checks where possible.  This was not
+  only the intention of the checks but by using identity, compatibility with
+  types that have broken equality operators is restored.
 
 
 v1.1.1_ - 2019-03-27
