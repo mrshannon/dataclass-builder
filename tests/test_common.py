@@ -8,10 +8,10 @@ from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
 
 
 def test_constants():
-    assert REQUIRED == REQUIRED
-    assert REQUIRED != OPTIONAL
-    assert OPTIONAL == OPTIONAL
-    assert OPTIONAL != REQUIRED
+    assert REQUIRED is REQUIRED
+    assert REQUIRED is not OPTIONAL
+    assert OPTIONAL is OPTIONAL
+    assert OPTIONAL is not REQUIRED
     assert repr(REQUIRED) == 'REQUIRED'
     assert repr(OPTIONAL) == 'OPTIONAL'
 

@@ -364,14 +364,14 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> type:
         """
         # check for missing required fields
         for name, field in required_fields.items():
-            if getattr(self, name) == REQUIRED:
+            if getattr(self, name) is REQUIRED:
                 raise MissingFieldError(
                     f"field '{name}' of dataclass '{dataclass.__qualname__}' "
                     "is not optional", dataclass, field)
         # build dataclass
         kwargs = {name: getattr(self, name)
                   for name in settable_fields
-                  if getattr(self, name) != OPTIONAL}
+                  if getattr(self, name) is not OPTIONAL}
         return dataclass(**kwargs)
 
     def _fields_method(
