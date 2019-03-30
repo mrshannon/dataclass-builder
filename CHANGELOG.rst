@@ -5,6 +5,10 @@ Changelog
 Unreleased_
 -----------
 
+
+v1.1.2_ - 2019-03-29
+--------------------
+
 * Fix issue #9 relating to the :code:`dataclass_builder` factory function
   failing to handle dataclasses which use types from the :code:`typing` module.
 * Replace equality checks with identity checks where possible.  This was not
@@ -93,7 +97,8 @@ v0.0.1 - 2019-03-11
 .. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
 
-.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.1...HEAD
+.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.2...HEAD
+.. _v1.1.2: https://github.com/mrshannon/dataclass-builder/compare/v1.1.1...v1.1.2
 .. _v1.1.1: https://github.com/mrshannon/dataclass-builder/compare/v1.1.0...v1.1.1
 .. _v1.1.0: https://github.com/mrshannon/dataclass-builder/compare/v1.0.1...v1.1.0
 .. _v1.0.1: https://github.com/mrshannon/dataclass-builder/compare/v1.0.0...v1.0.1
