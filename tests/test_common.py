@@ -1,3 +1,4 @@
+from copy import copy, deepcopy
 from dataclasses import fields
 
 from dataclass_builder._common import (
@@ -10,10 +11,43 @@ from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
 def test_constants():
     assert REQUIRED is REQUIRED
     assert REQUIRED is not OPTIONAL
+    assert REQUIRED is not MISSING
     assert OPTIONAL is OPTIONAL
     assert OPTIONAL is not REQUIRED
+    assert OPTIONAL is not MISSING
+    assert MISSING is MISSING
+    assert MISSING is not REQUIRED
+    assert MISSING is not OPTIONAL
+
+
+def test_constants_repr():
     assert repr(REQUIRED) == 'REQUIRED'
     assert repr(OPTIONAL) == 'OPTIONAL'
+    assert repr(MISSING) == 'MISSING'
+
+
+def test_constants_after_copy():
+    assert copy(REQUIRED) is REQUIRED
+    assert copy(REQUIRED) is not OPTIONAL
+    assert copy(REQUIRED) is not MISSING
+    assert copy(OPTIONAL) is OPTIONAL
+    assert copy(OPTIONAL) is not REQUIRED
+    assert copy(OPTIONAL) is not MISSING
+    assert copy(MISSING) is MISSING
+    assert copy(MISSING) is not REQUIRED
+    assert copy(MISSING) is not OPTIONAL
+
+
+def test_constants_after_deepcopy():
+    assert deepcopy(REQUIRED) is REQUIRED
+    assert deepcopy(REQUIRED) is not OPTIONAL
+    assert deepcopy(REQUIRED) is not MISSING
+    assert deepcopy(OPTIONAL) is OPTIONAL
+    assert deepcopy(OPTIONAL) is not REQUIRED
+    assert deepcopy(OPTIONAL) is not MISSING
+    assert deepcopy(MISSING) is MISSING
+    assert deepcopy(MISSING) is not REQUIRED
+    assert deepcopy(MISSING) is not OPTIONAL
 
 
 def test_required_and_optional_are_missing():
@@ -23,7 +57,20 @@ def test_required_and_optional_are_missing():
     assert MISSING == OPTIONAL
     assert MISSING != 1
     assert MISSING != 'other'
-    assert repr(MISSING) == 'MISSING'
+
+
+def test_required_and_optional_are_missing_after_copy():
+    assert copy(REQUIRED) == MISSING
+    assert copy(MISSING) == REQUIRED
+    assert copy(OPTIONAL) == MISSING
+    assert copy(MISSING) == OPTIONAL
+
+
+def test_required_and_optional_are_missing_after_deepcopy():
+    assert deepcopy(REQUIRED) == MISSING
+    assert deepcopy(MISSING) == REQUIRED
+    assert deepcopy(OPTIONAL) == MISSING
+    assert deepcopy(MISSING) == OPTIONAL
 
 
 def test_is_settable():
