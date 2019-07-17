@@ -14,12 +14,30 @@ __all__ = ['REQUIRED', 'OPTIONAL', 'MISSING',
 class _RequiredType:
     """Type of constant to indicate that a field is required."""
 
+    def __copy__(self) -> Any:
+        # immutable singleton and is compared based on id so copying must
+        # return the original
+        return self
+
+    def __deepcopy__(self, memo: Any = None) -> Any:
+        # immutable singleton and is compared based on id so copying must
+        # return the original
+        return self
+
     def __repr__(self) -> str:
         return 'REQUIRED'
 
 
 class _OptionalType:
     """Type of constant to indicate that a field is optional."""
+
+    def __copy__(self) -> Any:
+        # sentinel object so copy will break it
+        return self
+
+    def __deepcopy__(self, memo: Any = None) -> Any:
+        # sentinel object so copy will break it
+        return self
 
     def __repr__(self) -> str:
         return 'OPTIONAL'
@@ -31,6 +49,16 @@ class _MissingType:
     Compares True with REQUIRED or OPTIONAL.
 
     """
+
+    def __copy__(self) -> Any:
+        # immutable singleton and is compared based on id so copying must
+        # return the original
+        return self
+
+    def __deepcopy__(self, memo: Any = None) -> Any:
+        # immutable singleton and is compared based on id so copying must
+        # return the original
+        return self
 
     def __repr__(self) -> str:
         return 'MISSING'
