@@ -5,7 +5,7 @@ Changelog
 Unreleased_
 -----------
 
-* Fix issue #12 which would cause sentinel values :code:`REQUIRED`,
+* Fix issue `#12`_ which would cause sentinel values :code:`REQUIRED`,
   :code:`OPTIONAL`, and :code:`MISSING` to become incomparable after
   a :code:`copy` or :code:`deepcopy`.
 
@@ -13,7 +13,7 @@ Unreleased_
 v1.1.2_ - 2019-03-29
 --------------------
 
-* Fix issue #9 relating to the :code:`dataclass_builder` factory function
+* Fix issue `#9`_ relating to the :code:`dataclass_builder` factory function
   failing to handle dataclasses which use types from the :code:`typing` module.
 * Replace equality checks with identity checks where possible.  This was not
   only the intention of the checks but by using identity, compatibility with
@@ -109,3 +109,6 @@ v0.0.1 - 2019-03-11
 .. _v1.0.0: https://github.com/mrshannon/dataclass-builder/compare/v0.0.3...v1.0.0
 .. _v0.0.3: https://github.com/mrshannon/dataclass-builder/compare/v0.0.2...v0.0.3
 .. _v0.0.2: https://github.com/mrshannon/dataclass-builder/compare/v0.0.1...v0.0.2
+
+.. _#12: https://github.com/mrshannon/dataclass-builder/issues/12
+.. _#9: https://github.com/mrshannon/dataclass-builder/issues/9
