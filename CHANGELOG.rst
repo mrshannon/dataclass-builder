@@ -5,6 +5,10 @@ Changelog
 Unreleased_
 -----------
 
+* Fix issue #12 which would cause sentinel values :code:`REQUIRED`,
+  :code:`OPTIONAL`, and :code:`MISSING` to become incomparable after
+  a :code:`copy` or :code:`deepcopy`.
+
 
 v1.1.2_ - 2019-03-29
 --------------------
