@@ -5,6 +5,7 @@ Changelog
 Unreleased_
 -----------
 
+* Fix bug in dataclass builders that contains a field named fields.
 * Fix return type annotation of the build method.
 * Fix issue `#12`_ which would cause sentinel values :code:`REQUIRED`,
   :code:`OPTIONAL`, and :code:`MISSING` to become incomparable after

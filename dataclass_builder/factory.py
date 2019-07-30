@@ -420,7 +420,7 @@ def dataclass_builder(
     if 'build' not in settable_fields:
         dict_['build'] = _build_method
 
-    if 'build' not in settable_fields:
+    if 'fields' not in settable_fields:
         dict_['fields'] = _fields_method
 
     if name is None:
