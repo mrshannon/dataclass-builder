@@ -426,6 +426,15 @@ def test_init_annotations():
         'int_': int, 'float_': float, 'str_': str, 'return': type(None)}
 
 
+def test_build_annotations():
+    TypesBuilder = dataclass_builder(Types)
+    builder = TypesBuilder()
+    annotations = get_type_hints(builder.build)
+    assert annotations['return'] == Types
+    annotations = get_type_hints(builder._build)
+    assert annotations['return'] == Types
+
+
 def test_typing_module():
     TypingBuilder = dataclass_builder(Typing)
     builder = TypingBuilder()

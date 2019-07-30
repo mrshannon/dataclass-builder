@@ -140,7 +140,7 @@ or only the optional fields.
 """
 
 from typing import (Any, Callable, Dict, Mapping, MutableMapping, Optional,
-                    Sequence, TYPE_CHECKING, cast)
+                    Sequence, Type, TYPE_CHECKING, cast)
 
 from ._common import (REQUIRED, OPTIONAL, MISSING, _is_required,
                       _settable_fields, _required_fields, _optional_fields)
@@ -242,7 +242,8 @@ def _create_class_docstring(dataclass: Any) -> str:
     return docstring
 
 
-def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> type:
+def dataclass_builder(
+        dataclass: Type[Any], *, name: Optional[str] = None) -> Type[Any]:
     """Create a new builder class that is specialized to the given dataclass_.
 
     Parameters
@@ -400,6 +401,12 @@ def dataclass_builder(dataclass: Any, *, name: Optional[str] = None) -> type:
         if not required and optional:
             return optional_fields
         return settable_fields
+
+    # Fix return type of build, it won't help Mypy as it cannot handle
+    # classes created at runtime but typing.get_type_hints will work properly.
+    #
+    # See: https://github.com/python/mypy/wiki/Unsupported-Python-Features
+    _build_method.__annotations__['return'] = dataclass
 
     # assemble new builder class methods
     dict_: Dict[str, Any] = dict()

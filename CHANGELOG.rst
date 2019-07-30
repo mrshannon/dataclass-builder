@@ -5,6 +5,7 @@ Changelog
 Unreleased_
 -----------
 
+* Fix return type annotation of the build method.
 * Fix issue `#12`_ which would cause sentinel values :code:`REQUIRED`,
   :code:`OPTIONAL`, and :code:`MISSING` to become incomparable after
   a :code:`copy` or :code:`deepcopy`.
