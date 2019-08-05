@@ -36,7 +36,7 @@ check:
 	@python -m pycodestyle $(module) tests
 	@python -m pydocstyle $(module)
 
-apidoc: export SPHINX_APIDOC_OPTIONS=members,no-undoc-members,show-inheritance,private-members,special-members
+apidoc: export SPHINX_APIDOC_OPTIONS=members,no-undoc-members,show-inheritance,special-members
 apidoc:
 	@sphinx-apidoc -o docs/api -e $(module)
 	@rm docs/api/modules.rst

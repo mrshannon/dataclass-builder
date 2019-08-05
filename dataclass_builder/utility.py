@@ -1,7 +1,4 @@
-"""Utility functions for the package.
-
-.. _dataclass: https://docs.python.org/3/library/dataclasses.html
-"""
+"""Utility functions for the package."""
 
 from typing import Any, TYPE_CHECKING
 
@@ -15,10 +12,10 @@ __all__ = ['build', 'fields']
 
 
 def build(builder: DataclassBuilder) -> Any:
-    """Use the given :class:`DataclassBuilder` to initialize a dataclass_.
+    """Use the given :class:`DataclassBuilder` to initialize a `dataclass`.
 
-    This will use the values assigned to the given :paramref:`builder` to
-    construct a dataclass_ of the type the :paramref:`builder` was created for.
+    This will use the values assigned to the given `builder` to construct a
+    :func:`dataclasses.dataclass` of the type the `builder` was created for.
 
     .. note::
 
@@ -27,20 +24,10 @@ def build(builder: DataclassBuilder) -> Any:
         private methods of :class:`DataclassBuilder` which are excepted from
         field assignment.
 
-    Parameters
-    ----------
-    builder
+    :param builder:
         The dataclass builder to build from.
 
-    Returns
-    -------
-    dataclass_
-        An instance of the dataclass given in :func:`__init__` using the
-        fields set on this builder.
-
-    Raises
-    ------
-    MissingFieldError
+    :raises dataclass_builder.exceptions.MissingFieldError:
         If not all of the required fields have been assigned to this
         builder.
 
@@ -61,21 +48,17 @@ def fields(builder: DataclassBuilder, *,
         private methods of :class:`DataclassBuilder` which are excepted from
         field assignment.
 
-    Parameters
-    ----------
-    builder
+    :param builder:
         The dataclass builder to get the fields for.
-    required
+    :param required:
         Set to False to not report required fields.
-    optional
+    :param optional:
         Set to False to not report optional fields.
 
-    Returns
-    -------
-    Mapping[str, 'dataclasses.Field[Any]']
+    :return:
         A mapping from field names to actual :class:`dataclasses.Field`'s
-        in the same order as the :paramref:`builder`'s underlying
-        dataclass_.
+        in the same order as the `builder`'s underlying
+        :func:`dataclasses.dataclass`.
 
     """
     # pylint: disable=protected-access

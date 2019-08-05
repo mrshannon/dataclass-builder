@@ -1,7 +1,7 @@
-"""Create instances of dataclasses_ with the builder pattern.
+"""Create instances of :func:`dataclasses.dataclass` with the builder pattern.
 
 This module uses a generic wrapper that becomes specialized at initialization
-into a builder instance that can build a given dataclass_.
+into a builder instance that can build a given dataclass.
 
 Examples
 --------
@@ -42,9 +42,9 @@ Field values can also be provided in the constructor.
 
 .. note::
 
-    Positional arguments are not allowed, except for the dataclass_ itself.
+    Positional arguments are not allowed, except for the dataclass itself.
 
-Fields with default values in the dataclass_ are optional in the builder.
+Fields with default values in the dataclass are optional in the builder.
 
 .. doctest::
 
@@ -54,7 +54,7 @@ Fields with default values in the dataclass_ are optional in the builder.
     >>> build(builder)
     Point(x=5.8, y=8.1, w=1.0)
 
-Fields that don't have default values in the dataclass_ are not optional.
+Fields that don't have default values in the dataclass are not optional.
 
 .. doctest::
 
@@ -116,11 +116,6 @@ or only the optional fields.
 
     >>> list(fields(builder, required=False).keys())
     ['w']
-
-
-.. _dataclass: https://docs.python.org/3/library/dataclasses.html
-.. _dataclasses: https://docs.python.org/3/library/dataclasses.html
-
 """
 
 import dataclasses
@@ -134,13 +129,14 @@ __all__ = ['DataclassBuilder']
 
 
 class DataclassBuilder:
-    """Wrap a dataclass_ with an object implementing the builder pattern.
+    r"""Wrap a dataclass with an object implementing the builder pattern.
 
-    This class, via wrapping, allows dataclass_'s to be constructed with
+    This class, via wrapping, allows dataclasses to be constructed with
     the builder pattern.  Once an instance is constructed simply assign to
-    it's attributes, which are identical to the dataclass_ it was
-    constructed with.  When done use the :func:`build` function to attempt
-    to build the underlying dataclass_.
+    it's attributes, which are identical to the dataclass it was
+    constructed with.  When done use the
+    :func:`dataclass_builder.utility.build` function to attempt to build the
+    underlying dataclass.
 
     .. warning::
 
@@ -148,27 +144,23 @@ class DataclassBuilder:
         it care must be taken to only use private or "dunder" attributes
         and methods.
 
-    Parameters
-    ----------
-    dataclass
-        The dataclass_ that should be built by the
+    :param dataclass:
+        The dataclass_that should be built by the
         builder instance
-    **kwargs
+    :param \*\*kwargs:
         Optionally initialize fields during initialization of the builder.
         These can be changed later and will raise UndefinedFieldError if
-        they are not part of the :paramref:`dataclass`'s `__init__` method.
+        they are not part of the `dataclass`'s `__init__` method.
 
-    Raises
-    ------
-    TypeError
-        If :paramref:`dataclass` is not a dataclass_.
+    :raises TypeError:
+        If `dataclass` is not a dataclass.
         This is decided via :func:`dataclasses.is_dataclass`.
-    UndefinedFieldError
+    :raises dataclass_builder.exceptions.UndefinedFieldError:
         If you try to assign to a field that is not part of the
-        :paramref:`dataclass`'s `__init__`.
-    MissingFieldError
+        `dataclass`'s `__init__`.
+    :raises dataclass_builder.exceptions.MissingFieldError:
         If :func:`build` is called on this builder before all non default
-        fields of the :paramref:`dataclass` are assigned.
+        fields of the `dataclass` are assigned.
     """
 
     def __init__(self, dataclass: Any, **kwargs: Any):
@@ -194,28 +186,23 @@ class DataclassBuilder:
         .. note::
 
             This will pass through all attributes beginning with an underscore.
-            If this is a valid field of the dataclass_ it will still be built
+            If this is a valid field of the dataclass it will still be built
             correctly but UndefinedFieldError will not be thrown for attributes
             beginning with an underscore.
 
             If you need the exception to be thrown then set the field in the
             constructor.
 
-        Parameters
-        ----------
-        item
-            Name of the dataclass_ field or private/"dunder" attribute to set.
-        value
-            Value to assign to the dataclass_ field or private/"dunder"
+        :param item:
+            Name of the dataclass field or private/"dunder" attribute to set.
+        :param value:
+            Value to assign to the dataclass field or private/"dunder"
             attribute.
 
-        Raises
-        ------
-        UndefinedFieldError
-            If :paramref:`item` is not initialisable in the underlying
-            dataclass_.  If :paramref:`item` is private (begins with an
-            underscore) or is a "dunder" then this exception will not
-            be raised.
+        :raises dataclass_builder.exceptions.UndefinedFieldError:
+            If `item` is not initialisable in the underlying dataclass.  If
+            `item` is private (begins with an underscore) or is a "dunder" then
+            this exception will not be raised.
 
         """
         if item.startswith('_') or item in self.__settable_fields:
@@ -233,8 +220,6 @@ class DataclassBuilder:
     def __repr__(self) -> str:
         """Print a representation of the builder.
 
-        Examples
-        --------
         .. testcode::
 
             from dataclasses import dataclass
@@ -249,8 +234,7 @@ class DataclassBuilder:
         >>> DataclassBuilder(Point, x=4.0, w=2.0)
         DataclassBuilder(Point, x=4.0, w=2.0)
 
-        Returns
-        -------
+        :return:
             String representation that can be used to construct this builder
             instance.
         """
@@ -262,17 +246,13 @@ class DataclassBuilder:
         return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build(self) -> Any:
-        """Build the underlying dataclass_ using the fields from this builder.
+        """Build the underlying dataclass using the fields from this builder.
 
-        Returns
-        -------
-        dataclass
-            An instance of the dataclass_ given in :func:`__init__` using the
+        :return dataclass:
+            An instance of the dataclass given in :func:`__init__` using the
             fields set on this builder instance.
 
-        Raises
-        ------
-        MissingFieldError
+        :raises dataclass_builder.exceptions.MissingFieldError:
             If not all of the required fields have been assigned to this
             builder instance.
 
@@ -294,18 +274,14 @@ class DataclassBuilder:
             Mapping[str, 'dataclasses.Field[Any]']:
         """Get a dictionary of the builder's fields.
 
-        Parameters
-        ----------
-        required
+        :param required:
             Set to False to not report required fields.
-        optional
+        :param optional:
             Set to False to not report optional fields.
 
-        Returns
-        -------
-        dict
+        :return dict:
             A mapping from field names to actual :class:`dataclasses.Field`'s
-            in the same order as the underlying dataclass_.
+            in the same order as the underlying dataclass.
 
         """
         if not required and not optional:

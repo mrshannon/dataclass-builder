@@ -51,8 +51,6 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon',
-    'sphinx_paramlinks'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -95,9 +93,13 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
+    "fixed_sidebar": True,
     'github_user': 'mrshannon',
     'github_repo': 'dataclass-builder',
-    'github_banner': True
+    'github_banner': True,
+    "github_button": True,
+    "codecov_button": True,
+    "show_relbars": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -202,3 +204,8 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+
+autodoc_default_options = {
+    "special-members": "__repr__,__setattr__",
+}
