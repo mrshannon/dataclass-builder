@@ -9,6 +9,7 @@ Unreleased_
 v1.1.3_ - 2019-08-07
 --------------------
 
+* Switch to reST docstrings and remove paramref requirement.
 * Fix bug in dataclass builders that contains a field named fields.
 * Fix return type annotation of the build method.
 * Fix issue `#12`_ which would cause sentinel values :code:`REQUIRED`,
