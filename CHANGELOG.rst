@@ -5,6 +5,10 @@ Changelog
 Unreleased_
 -----------
 
+
+v1.1.3_ - 2019-08-07
+--------------------
+
 * Fix bug in dataclass builders that contains a field named fields.
 * Fix return type annotation of the build method.
 * Fix issue `#12`_ which would cause sentinel values :code:`REQUIRED`,
@@ -103,7 +107,8 @@ v0.0.1 - 2019-03-11
 .. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
 
-.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.2...HEAD
+.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.3...HEAD
+.. _v1.1.3: https://github.com/mrshannon/dataclass-builder/compare/v1.1.2...v1.1.3
 .. _v1.1.2: https://github.com/mrshannon/dataclass-builder/compare/v1.1.1...v1.1.2
 .. _v1.1.1: https://github.com/mrshannon/dataclass-builder/compare/v1.1.0...v1.1.1
 .. _v1.1.0: https://github.com/mrshannon/dataclass-builder/compare/v1.0.1...v1.1.0

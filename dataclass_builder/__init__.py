@@ -10,7 +10,7 @@ from .factory import dataclass_builder
 from .utility import build, fields
 from ._common import REQUIRED, OPTIONAL, MISSING
 
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 __all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError',
            'DataclassBuilder', 'REQUIRED', 'OPTIONAL', 'MISSING',
