@@ -225,7 +225,7 @@ def _create_class_docstring(dataclass: Any) -> str:
     params = []
     for name, field in _settable_fields(dataclass).items():
         params.append(f"    :param {name}: Optionally initialize `{name}` field.\n")
-    docstring = f"""Builder for the :class:`{dname}` dataclass.
+    docstring = rf"""Builder for the :class:`{dname}` dataclass.
 
     This class allows the :class:`{dname}` dataclass to be constructed with the
     builder pattern.  Once an instance is constructed simply assign to it's
@@ -239,7 +239,7 @@ def _create_class_docstring(dataclass: Any) -> str:
         Because this class overrides attribute assignment, care must be taken
         when extending to only use private and/or "dunder" attributes and
         methods.
-        
+
     See :class:`{dname}` for further information on each filed.
 
 {''.join(params)}
@@ -254,7 +254,9 @@ def _create_class_docstring(dataclass: Any) -> str:
     return docstring
 
 
-def dataclass_builder(dataclass: Type[Any], *, name: Optional[str] = None) -> Type[Any]:
+def dataclass_builder(  # noqa: C901
+    dataclass: Type[Any], *, name: Optional[str] = None
+) -> Type[Any]:
     """Create a new builder class specialized to a given dataclass.
 
     :param dataclass:
@@ -314,23 +316,23 @@ def dataclass_builder(dataclass: Type[Any], *, name: Optional[str] = None) -> Ty
             )
 
     _setattr_method.__doc__ = f"""Set a field value, or an object attribute if it is private.
-    
+
         .. note::
-    
+
             This will pass through all attributes beginning with an underscore.
             If this is a valid field of the dataclass it will still be built
             correctly but UndefinedFieldError will not be thrown for attributes
             beginning with an underscore.
-    
+
             If you need the exception to be thrown then set the field in the
             constructor.
-    
+
         :param name:
             Name of the dataclass field or private/dunder attribute to set.
         :param value:
             Value to assign to the dataclass field or private/dunder
             attribute.
-    
+
         :raises dataclass_builder.exceptions.UndefinedFieldError:
             If `name` is not initialisable in the :class:`{dname}` dataclass.
             If `name` is private (begins with an underscore) or is a "dunder"
@@ -396,12 +398,12 @@ def dataclass_builder(dataclass: Type[Any], *, name: Optional[str] = None) -> Ty
         return settable_fields
 
     _fields_method.__doc__ = f"""Get a dictionary of the builder's fields.
-    
+
         :param required:
             Set to False to not report required fields.
         :param optional:
             Set to False to not report optional fields.
-    
+
         :return:
             A mapping from field names to actual :class:`dataclasses.Field`'s
             in the same order as in the :class:`{dname}` dataclass.
