@@ -5,6 +5,9 @@ Changelog
 Unreleased_
 -----------
 
+* Add :code:`update` function to facilitate updating a dataclass or dataclass
+  builder from a partially completed dataclass builder.
+
 
 v1.1.3_ - 2019-08-07
 --------------------
