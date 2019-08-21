@@ -276,16 +276,20 @@ or only the optional fields.
 .. _PyPI: https://pypi.org/
 
 .. |build-status| image:: https://travis-ci.com/mrshannon/dataclass-builder.svg?branch=master&style=flat
-   :target: https://travis-ci.com/mrshannon/dataclass-builder
-   :alt: Build status
+    :target: https://travis-ci.com/mrshannon/dataclass-builder
+    :alt: Build status
+
+.. |doc-status| image:: https://readthedocs.org/projects/dataclass-builder/badge/?version=latest
+   :target: https://dataclass-builder.readthedocs.io/en/latest/
+   :alt: Documentation status
 
 .. |coverage-status| image:: https://codecov.io/gh/mrshannon/dataclass-builder/coverage.svg?branch=master
-   :target: https://codecov.io/gh/mrshannon/dataclass-builder?branch=master
-   :alt: Test coverage
+    :target: https://codecov.io/gh/mrshannon/dataclass-builder?branch=master
+    :alt: Test coverage
 
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-   :alt: Code style is black
+    :target: https://github.com/psf/black
+    :alt: Code style is black
 
 .. |version| image:: https://img.shields.io/pypi/v/dataclass-builder.svg
     :alt: PyPI Package latest release
