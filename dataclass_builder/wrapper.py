@@ -116,27 +116,33 @@ or only the optional fields.
 
     >>> list(fields(builder, required=False).keys())
     ['w']
+
 """
 
 import dataclasses
-from typing import Any, Mapping, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Mapping
 
-from .exceptions import UndefinedFieldError, MissingFieldError
-from ._common import (REQUIRED, OPTIONAL, _is_required, _settable_fields,
-                      _required_fields, _optional_fields)
+from ._common import (
+    OPTIONAL,
+    REQUIRED,
+    _is_required,
+    _optional_fields,
+    _required_fields,
+    _settable_fields,
+)
+from .exceptions import MissingFieldError, UndefinedFieldError
 
-__all__ = ['DataclassBuilder']
+__all__ = ["DataclassBuilder"]
 
 
 class DataclassBuilder:
-    r"""Wrap a dataclass with an object implementing the builder pattern.
+    """Wrap a dataclass with an object implementing the builder pattern.
 
     This class, via wrapping, allows dataclasses to be constructed with
     the builder pattern.  Once an instance is constructed simply assign to
     it's attributes, which are identical to the dataclass it was
-    constructed with.  When done use the
-    :func:`dataclass_builder.utility.build` function to attempt to build the
-    underlying dataclass.
+    constructed with.  When done use the :func:`dataclass_builder.utility.build`
+    function to attempt to build the underlying dataclass.
 
     .. warning::
 
@@ -144,26 +150,28 @@ class DataclassBuilder:
         it care must be taken to only use private or "dunder" attributes
         and methods.
 
-    :param dataclass:
-        The dataclass_that should be built by the
-        builder instance
-    :param \*\*kwargs:
-        Optionally initialize fields during initialization of the builder.
-        These can be changed later and will raise UndefinedFieldError if
-        they are not part of the `dataclass`'s `__init__` method.
-
-    :raises TypeError:
-        If `dataclass` is not a dataclass.
-        This is decided via :func:`dataclasses.is_dataclass`.
-    :raises dataclass_builder.exceptions.UndefinedFieldError:
-        If you try to assign to a field that is not part of the
-        `dataclass`'s `__init__`.
-    :raises dataclass_builder.exceptions.MissingFieldError:
-        If :func:`build` is called on this builder before all non default
-        fields of the `dataclass` are assigned.
     """
 
     def __init__(self, dataclass: Any, **kwargs: Any):
+        r"""
+        :param dataclass:
+            The dataclass_that should be built by the
+            builder instance
+        :param \*\*kwargs:
+            Optionally initialize fields during initialization of the builder.
+            These can be changed later and will raise UndefinedFieldError if
+            they are not part of the `dataclass`'s `__init__` method.
+
+        :raises TypeError:
+            If `dataclass` is not a dataclass.
+            This is decided via :func:`dataclasses.is_dataclass`.
+        :raises dataclass_builder.exceptions.UndefinedFieldError:
+            If you try to assign to a field that is not part of the
+            `dataclass`'s `__init__`.
+        :raises dataclass_builder.exceptions.MissingFieldError:
+            If :func:`build` is called on this builder before all non default
+            fields of the `dataclass` are assigned.
+        """
         if not dataclasses.is_dataclass(dataclass):
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
@@ -177,7 +185,8 @@ class DataclassBuilder:
         for key, value in kwargs.items():
             if key not in self.__settable_fields:
                 raise TypeError(
-                    f"__init__() got an unexpected keyword argument '{key}'")
+                    f"__init__() got an unexpected keyword argument '{key}'"
+                )
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
@@ -205,12 +214,15 @@ class DataclassBuilder:
             this exception will not be raised.
 
         """
-        if item.startswith('_') or item in self.__settable_fields:
+        if item.startswith("_") or item in self.__settable_fields:
             self.__dict__[item] = value
         else:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
-                f"field '{item}'", self.__dataclass, item)
+                f"field '{item}'",
+                self.__dataclass,
+                item,
+            )
 
     if TYPE_CHECKING:
         # tells type checking that it should ignore attribute access
@@ -242,7 +254,7 @@ class DataclassBuilder:
         for name in self.__settable_fields:
             value = getattr(self, name)
             if value not in (REQUIRED, OPTIONAL):
-                args.append(f'{name}={repr(value)}')
+                args.append(f"{name}={repr(value)}")
         return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build(self) -> Any:
@@ -263,15 +275,21 @@ class DataclassBuilder:
                 raise MissingFieldError(
                     f"field '{name}' of dataclass "
                     f"'{self.__dataclass.__qualname__}' "
-                    "is not optional", self.__dataclass, field)
+                    "is not optional",
+                    self.__dataclass,
+                    field,
+                )
         # build dataclass
-        kwargs = {name: getattr(self, name)
-                  for name in self.__settable_fields
-                  if getattr(self, name) is not OPTIONAL}
+        kwargs = {
+            name: getattr(self, name)
+            for name in self.__settable_fields
+            if getattr(self, name) is not OPTIONAL
+        }
         return self.__dataclass(**kwargs)
 
-    def _fields(self, required: bool = True, optional: bool = True) -> \
-            Mapping[str, 'dataclasses.Field[Any]']:
+    def _fields(
+        self, required: bool = True, optional: bool = True
+    ) -> Mapping[str, "dataclasses.Field[Any]"]:
         """Get a dictionary of the builder's fields.
 
         :param required:
