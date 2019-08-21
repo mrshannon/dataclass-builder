@@ -105,8 +105,8 @@ def _is_required(field: "dataclasses.Field[Any]") -> bool:
     return (
         field.init
         and field.default is dataclasses.MISSING
-        and field.default_factory is dataclasses.MISSING
-    )  # type: ignore
+        and field.default_factory is dataclasses.MISSING  # type: ignore
+    )
 
 
 def _is_optional(field: "dataclasses.Field[Any]") -> bool:
@@ -121,8 +121,8 @@ def _is_optional(field: "dataclasses.Field[Any]") -> bool:
     return (
         field.init
         and (field.default is not dataclasses.MISSING)
-        or (field.default_factory is not dataclasses.MISSING)
-    )  # type: ignore
+        or (field.default_factory is not dataclasses.MISSING)  # type: ignore
+    )
 
 
 def _settable_fields(dataclass: Any) -> Mapping[str, "dataclasses.Field[Any]"]:
