@@ -1,14 +1,28 @@
 language: python
 install:
-    - pip install codecov
-    - pip install -r dev-requirements.txt
-script:
-    - make test
+  - pip install tox
+script: tox
 matrix:
-    include:
-        - python: '3.6'
-        - python: '3.7'
-          dist: xenial
-          sudo: true
-after_success:
-    - codecov
+  include:
+    - name: run test suite with python 3.6
+      python: 3.6
+      env: TOXENV=py36
+    - name: run test suite with python 3.7
+      python: 3.7
+      env: TOXENV=py37
+    - name: typing and style checks
+      python: 3.7
+      env: TOXENV=checks
+    - name: test documentation build
+      python: 3.7
+      env: TOXENV=docs-html
+    - name: test install and import
+      python: 3.7
+      env: TOXENV=install
+    - name: generate report for codecov.io
+      python: 3.7
+      install:
+        - pip install tox codecov
+      after_success:
+        - codecov
+      env: TOXENV=coverage
