@@ -2,13 +2,14 @@
 
 from typing import TYPE_CHECKING, Any
 
+from ._common import MISSING
 from .wrapper import DataclassBuilder
 
 if TYPE_CHECKING:
     from typing import Mapping
     from dataclasses import Field
 
-__all__ = ["build", "fields"]
+__all__ = ["build", "fields", "update"]
 
 
 def build(builder: DataclassBuilder) -> Any:
@@ -63,3 +64,24 @@ def fields(
     """
     # pylint: disable=protected-access
     return builder._fields(required=required, optional=optional)
+
+
+def update(dataclass: Any, builder: DataclassBuilder) -> None:
+    """Update a dataclass or dataclass builder from a partial dataclass builder.
+
+    :param dataclass:
+        :func`dataclasses.dataclass` or dataclass builder to update.
+
+        .. note::
+
+            Technically this can be any object that supports
+            :func:`__setattr__`.
+    :param builder:
+        The datalcass builder to update `dataclass` with.  All fields that are
+        not missing in the `builder` will be set (overridden) on the given
+        `dataclass`.
+    """
+    for field in fields(builder):
+        value = getattr(builder, field)
+        if value != MISSING:
+            setattr(dataclass, field, value)

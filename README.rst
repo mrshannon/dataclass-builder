@@ -43,7 +43,7 @@ Using specialized builders allows for better documentation than the `DataclassBu
 .. code-block:: python
 
     from dataclasses import dataclass
-    from dataclass_builder import (dataclass_builder, build, fields,
+    from dataclass_builder import (dataclass_builder, build, fields, update
                                    REQUIRED, OPTIONAL)
 
     @dataclass
@@ -79,9 +79,7 @@ Field values can also be provided in the constructor.
     >>> builder.build()
     Point(x=5.8, y=8.1, w=100)
 
-.. note::
-
-    Positional arguments are not allowed.
+*Positional arguments are not allowed.*
 
 Fields with default values in the dataclass_ are optional in the builder.
 
@@ -113,9 +111,7 @@ Fields not defined in the dataclass cannot be set in the builder.
     ...
     UndefinedFieldError: dataclass 'Point' does not define field 'z'
 
-.. note::
-
-    No exception will be raised for fields beginning with an underscore as they are reserved for use by subclasses.
+*No exception will be raised for fields beginning with an underscore as they are reserved for use by subclasses.*
 
 Accessing a field of the builder before it is set gives either the `REQUIRED` or `OPTIONAL` constant
 
@@ -150,9 +146,19 @@ or only the optional fields.
     >>> list(builder.fields(required=False).keys())
     ['w']
 
-.. note::
 
-    If the underlying dataclass_ has a field named `fields` this method will not be generated and instead the `fields` function should be used instead.
+If the underlying dataclass_ has a field named `fields` this method will not be generated and instead the `fields` function should be used instead.
+
+An already built dataclass_ can be updated with a partially completed builder using the :code:`update` function.
+
+.. code-block:: python
+
+    >>> point = Point(x=5.8, y=8.1, w=100)
+    >>> update(point, PointBuilder(y=1.1))
+    >>> point
+    Point(x=5.8, y=1.1, w=100)
+
+*Dataclass builders can also be updated, but frozen dataclasses cannot.*
 
 
 Builder Instance (generic wrapper)

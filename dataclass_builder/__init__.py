@@ -7,7 +7,7 @@ from .__version__ import __version__
 from ._common import MISSING, OPTIONAL, REQUIRED
 from .exceptions import DataclassBuilderError, MissingFieldError, UndefinedFieldError
 from .factory import dataclass_builder
-from .utility import build, fields
+from .utility import build, fields, update
 from .wrapper import DataclassBuilder
 
 __all__ = [
@@ -22,4 +22,5 @@ __all__ = [
     "dataclass_builder",
     "build",
     "fields",
+    "update",
 ]
