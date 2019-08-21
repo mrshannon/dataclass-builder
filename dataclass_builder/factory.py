@@ -7,7 +7,6 @@ constructing dataclasses over a period of time instead of all at once.
 
 Examples
 --------
-
 Using specialized builders allows for better documentation than the
 :class:`DataclassBuilder` wrapper and allows for type checking because
 annotations are dynamically generated.
@@ -134,6 +133,7 @@ or only the optional fields.
     If the underlying dataclass has a field named `fields` this method will
     not be generated and instead the :func:`fields` function should be used
     instead.
+
 """
 
 from typing import (

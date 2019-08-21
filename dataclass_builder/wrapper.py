@@ -116,6 +116,7 @@ or only the optional fields.
 
     >>> list(fields(builder, required=False).keys())
     ['w']
+
 """
 
 import dataclasses
@@ -135,14 +136,13 @@ __all__ = ["DataclassBuilder"]
 
 
 class DataclassBuilder:
-    r"""Wrap a dataclass with an object implementing the builder pattern.
+    """Wrap a dataclass with an object implementing the builder pattern.
 
     This class, via wrapping, allows dataclasses to be constructed with
     the builder pattern.  Once an instance is constructed simply assign to
     it's attributes, which are identical to the dataclass it was
-    constructed with.  When done use the
-    :func:`dataclass_builder.utility.build` function to attempt to build the
-    underlying dataclass.
+    constructed with.  When done use the :func:`dataclass_builder.utility.build`
+    function to attempt to build the underlying dataclass.
 
     .. warning::
 
@@ -150,26 +150,28 @@ class DataclassBuilder:
         it care must be taken to only use private or "dunder" attributes
         and methods.
 
-    :param dataclass:
-        The dataclass_that should be built by the
-        builder instance
-    :param \*\*kwargs:
-        Optionally initialize fields during initialization of the builder.
-        These can be changed later and will raise UndefinedFieldError if
-        they are not part of the `dataclass`'s `__init__` method.
-
-    :raises TypeError:
-        If `dataclass` is not a dataclass.
-        This is decided via :func:`dataclasses.is_dataclass`.
-    :raises dataclass_builder.exceptions.UndefinedFieldError:
-        If you try to assign to a field that is not part of the
-        `dataclass`'s `__init__`.
-    :raises dataclass_builder.exceptions.MissingFieldError:
-        If :func:`build` is called on this builder before all non default
-        fields of the `dataclass` are assigned.
     """
 
     def __init__(self, dataclass: Any, **kwargs: Any):
+        r"""
+        :param dataclass:
+            The dataclass_that should be built by the
+            builder instance
+        :param \*\*kwargs:
+            Optionally initialize fields during initialization of the builder.
+            These can be changed later and will raise UndefinedFieldError if
+            they are not part of the `dataclass`'s `__init__` method.
+
+        :raises TypeError:
+            If `dataclass` is not a dataclass.
+            This is decided via :func:`dataclasses.is_dataclass`.
+        :raises dataclass_builder.exceptions.UndefinedFieldError:
+            If you try to assign to a field that is not part of the
+            `dataclass`'s `__init__`.
+        :raises dataclass_builder.exceptions.MissingFieldError:
+            If :func:`build` is called on this builder before all non default
+            fields of the `dataclass` are assigned.
+        """
         if not dataclasses.is_dataclass(dataclass):
             raise TypeError("must be called with a dataclass type")
         self.__dataclass = dataclass
