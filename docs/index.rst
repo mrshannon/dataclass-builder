@@ -3,18 +3,37 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to dataclass-builder's documentation!
-=============================================
+dataclass-builder
+=================
+
+User Guide
+----------
+
+Work in progress.
+
+
+API Documentation
+-----------------
+
+If you are looking for information on a specific function, class, or method, this part of the documentation is for you, in particular the :ref:`public_api`.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-   api
+   api/public
 
 
-Indices and tables
-==================
+Contributor Guide
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   api/private
+
+
+Indices and Tables
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

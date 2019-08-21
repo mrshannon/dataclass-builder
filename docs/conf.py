@@ -12,12 +12,26 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
+import re
+from pathlib import Path
 
 import packaging.version
+from sphinx.ext.autodoc import ClassLevelDocumenter, InstanceAttributeDocumenter
 
-from dataclass_builder import __version__
+_CONF = Path(__file__)
+
+
+def read_version(filename):
+    return re.search(
+        r"^__version__\s*=\s*['\"]([^'\"]*)['\"]", read(filename), re.MULTILINE
+    ).group(1)
+
+
+def read(filename):
+    with open(_CONF.parent / filename) as infile:
+        text = infile.read()
+    return text
+
 
 # -- Project information -----------------------------------------------------
 
@@ -25,9 +39,7 @@ project = "dataclass-builder"
 copyright = "2019, Michael R. Shannon"
 author = "Michael R. Shannon"
 
-
-sys.path.insert(0, os.path.abspath(".."))
-_version = packaging.version.parse(__version__)
+_version = packaging.version.parse(read_version("../dataclass_builder/__version__.py"))
 # The short X.Y version
 version = _version.base_version
 # The full version, including alpha/beta/rc tags
@@ -51,7 +63,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
-    "sphinx.ext.githubpages",
+    "sphinxcontrib.apidoc",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -94,19 +106,21 @@ html_theme = "alabaster"
 # documentation.
 #
 html_theme_options = {
-    "fixed_sidebar": True,
     "github_user": "mrshannon",
     "github_repo": "dataclass-builder",
     "github_banner": True,
-    "github_button": True,
-    "codecov_button": True,
-    "show_relbars": True,
+    "github_button": False,
+    "fixed_sidebar": True,
+    "sidebar_collapse": True,
+    "show_relbars": False,
+    "show_powered_by": False,
+    "show_related": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = ["_static", "_static/custom.css"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -117,6 +131,11 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+
+html_sidebars = {
+    "index": ["localtoc.html", "searchbox.html"],
+    "**": ["about.html", "localtoc.html", "relations.html", "searchbox.html"],
+}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -136,7 +155,7 @@ latex_elements = {
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
     #
-    # 'preamble': '',
+    "preamble": "\setcounter{tocdepth}{5} ",
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -215,3 +234,22 @@ todo_include_todos = True
 
 
 autodoc_default_options = {"special-members": "__repr__,__setattr__"}
+
+autodoc_member_order = "bysource"
+autodoc_inherit_docstrings = True
+autoclass_content = "both"
+
+apidoc_module_dir = "../dataclass_builder"
+apidoc_output_dir = "api/apidoc"
+apidoc_separate_modules = True
+apidoc_toc_file = False
+apidoc_extra_args = ["--private"]
+
+
+# remove = None from attributes
+# https://github.com/sphinx-doc/sphinx/issues/2044
+def iad_add_directive_header(self, sig):
+    ClassLevelDocumenter.add_directive_header(self, sig)
+
+
+InstanceAttributeDocumenter.add_directive_header = iad_add_directive_header

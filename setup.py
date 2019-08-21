@@ -19,7 +19,7 @@ def read(filename):
     return text
 
 
-docs_require = ["sphinx>=1.7"]
+docs_require = ["packaging", "sphinx>=1.7", "sphinxcontrib-apidoc"]
 checks_require = ["flake8>=3.7.7", "flake8-bugbear", "mypy", "pydocstyle"]
 tests_require = ["pytest", "pytest-cov", "pytest-mock"]
 dev_requires = ["black", "isort", "twine"]
@@ -29,7 +29,7 @@ install_requires = ["dataclasses;python_version=='3.6'"]
 
 setup(
     name="dataclass-builder",
-    version=read_version("dataclass_builder/__init__.py"),
+    version=read_version("dataclass_builder/__version__.py"),
     author="Michael R. Shannon",
     author_email="mrshannon.aerospace@gmail.com",
     description="Create instances of dataclasses with the builder pattern.",
