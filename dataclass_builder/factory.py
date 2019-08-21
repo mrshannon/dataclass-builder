@@ -223,7 +223,7 @@ def _create_class_docstring(dataclass: Any) -> str:
     except AttributeError:
         pass
     params = []
-    for name, field in _settable_fields(dataclass).items():
+    for name in _settable_fields(dataclass).keys():
         params.append(f"    :param {name}: Optionally initialize `{name}` field.\n")
     docstring = rf"""Builder for the :class:`{dname}` dataclass.
 
@@ -315,7 +315,8 @@ def dataclass_builder(  # noqa: C901
                 name,
             )
 
-    _setattr_method.__doc__ = f"""Set a field value, or an object attribute if it is private.
+    _setattr_method.__doc__ = f"""\
+    Set a field value, or an object attribute if it is private.
 
         .. note::
 
@@ -375,7 +376,8 @@ def dataclass_builder(  # noqa: C901
         }
         return dataclass(**kwargs)
 
-    _build_method.__doc__ = f"""Build a :class:`{dname}` dataclass using the fields from this builder.
+    _build_method.__doc__ = f"""\
+    Build a :class:`{dname}` dataclass using the fields from this builder.
 
     :return:
         An instance of the :class:`{dname}` dataclass using the fields set on

@@ -20,7 +20,7 @@ def read(filename):
 
 
 docs_require = ["sphinx>=1.7"]
-checks_require = ["flake8>=3.7.7", "mypy", "pydocstyle"]
+checks_require = ["flake8>=3.7.7", "flake8-bugbear", "mypy", "pydocstyle"]
 tests_require = ["pytest", "pytest-cov", "pytest-mock"]
 dev_requires = ["black", "isort", "twine"]
 
