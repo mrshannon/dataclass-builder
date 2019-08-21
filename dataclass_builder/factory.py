@@ -136,12 +136,29 @@ or only the optional fields.
     instead.
 """
 
-from typing import (Any, Callable, Dict, Mapping, MutableMapping, Optional,
-                    Sequence, Type, TYPE_CHECKING, cast)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Sequence,
+    Type,
+    cast,
+)
 
-from ._common import (REQUIRED, OPTIONAL, MISSING, _is_required,
-                      _settable_fields, _required_fields, _optional_fields)
-from .exceptions import UndefinedFieldError, MissingFieldError
+from ._common import (
+    MISSING,
+    OPTIONAL,
+    REQUIRED,
+    _is_required,
+    _optional_fields,
+    _required_fields,
+    _settable_fields,
+)
+from .exceptions import MissingFieldError, UndefinedFieldError
 
 if TYPE_CHECKING:
     from dataclasses import Field, is_dataclass

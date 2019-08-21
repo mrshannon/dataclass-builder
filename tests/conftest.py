@@ -1,6 +1,7 @@
 import math
-from typing import Sequence, Mapping
 from dataclasses import dataclass, field
+from typing import Mapping, Sequence
+
 from dataclass_builder import DataclassBuilder
 
 

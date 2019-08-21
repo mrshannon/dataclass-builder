@@ -2,10 +2,17 @@ from copy import copy, deepcopy
 from dataclasses import fields
 
 from dataclass_builder._common import (
-    REQUIRED, OPTIONAL, MISSING,
-    _is_settable, _is_required, _is_optional,
-    _settable_fields, _required_fields, _optional_fields)
-from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
+    MISSING,
+    OPTIONAL,
+    REQUIRED,
+    _is_optional,
+    _is_required,
+    _is_settable,
+    _optional_fields,
+    _required_fields,
+    _settable_fields,
+)
+from tests.conftest import Circle, PixelCoord, Point, Types  # type: ignore
 
 
 def test_constants():

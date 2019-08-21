@@ -14,8 +14,10 @@
 #
 import os
 import sys
+
 import packaging.version
 
+from dataclass_builder import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -25,7 +27,6 @@ author = 'Michael R. Shannon'
 
 
 sys.path.insert(0, os.path.abspath('..'))
-from dataclass_builder import __version__
 _version = packaging.version.parse(__version__)
 # The short X.Y version
 version = _version.base_version

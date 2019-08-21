@@ -3,13 +3,28 @@ from typing import Any, get_type_hints
 
 import pytest  # type: ignore
 
-from dataclass_builder import (MissingFieldError, UndefinedFieldError,
-                               REQUIRED, OPTIONAL,
-                               dataclass_builder, build, fields)
+from dataclass_builder import (
+    OPTIONAL,
+    REQUIRED,
+    MissingFieldError,
+    UndefinedFieldError,
+    build,
+    dataclass_builder,
+    fields,
+)
 from dataclass_builder.factory import _create_fn
-from tests.conftest import (Circle, PixelCoord, Point,  # type: ignore
-                            NoFields, NoInitFields, NotADataclass,
-                            Build, Fields, Types, Typing)
+from tests.conftest import (  # type: ignore
+    Build,
+    Circle,
+    Fields,
+    NoFields,
+    NoInitFields,
+    NotADataclass,
+    PixelCoord,
+    Point,
+    Types,
+    Typing,
+)
 
 
 def test_create_fn():

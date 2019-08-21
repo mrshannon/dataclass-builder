@@ -119,11 +119,17 @@ or only the optional fields.
 """
 
 import dataclasses
-from typing import Any, Mapping, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Mapping
 
-from .exceptions import UndefinedFieldError, MissingFieldError
-from ._common import (REQUIRED, OPTIONAL, _is_required, _settable_fields,
-                      _required_fields, _optional_fields)
+from ._common import (
+    OPTIONAL,
+    REQUIRED,
+    _is_required,
+    _optional_fields,
+    _required_fields,
+    _settable_fields,
+)
+from .exceptions import MissingFieldError, UndefinedFieldError
 
 __all__ = ['DataclassBuilder']
 
