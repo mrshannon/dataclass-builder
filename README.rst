@@ -1,16 +1,15 @@
 dataclass-builder
 =================
 
-Create instances of Python dataclasses with the builder pattern.
-
 |build-status|
 |coverage-status|
-
+|code-style|
 |version|
 |supported-versions|
-|wheel|
 |status|
+|license|
 
+Create instances of Python dataclasses with the builder pattern.
 
 
 Requirements
@@ -18,7 +17,6 @@ Requirements
 
 * Python 3.6 or greater
 * dataclasses_ if using Python 3.6
-
 
 
 Installation
@@ -31,22 +29,16 @@ Installation
     $ pip install dataclass-builder
 
 
-
 Usage
 -----
 
-There are two ways to use `dataclass-builder`.  Via a builder instance or by
-creating a dedicated builder.  The latter is recommended when repeated building
-of a given dataclass is desired or when docstrings and type checking are
-important.
+There are two ways to use `dataclass-builder`.  Via a builder instance or by creating a dedicated builder.  The latter is recommended when repeated building of a given dataclass is desired or when docstrings and type checking are important.
 
 
 Dedicated Builder (builder factory)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using specialized builders allows for better documentation than the
-`DataclassBuilder` wrapper and allows for type checking because annotations are
-dynamically generated.
+Using specialized builders allows for better documentation than the `DataclassBuilder` wrapper and allows for type checking because annotations are dynamically generated.
 
 .. code-block:: python
 
@@ -73,8 +65,7 @@ Now we can build a point.
     >>> build(builder)
     Point(x=5.8, y=8.1, w=2.0)
 
-As long as the dataclass_ the builder was constructed for does not have a
-`build` field then a `build` method will be generated as well.
+As long as the dataclass_ the builder was constructed for does not have a `build` field then a `build` method will be generated as well.
 
     >>> builder.build()
     Point(x=5.8, y=8.1, w=2.0)
@@ -124,11 +115,9 @@ Fields not defined in the dataclass cannot be set in the builder.
 
 .. note::
 
-    No exception will be raised for fields beginning with an underscore as they
-    are reserved for use by subclasses.
+    No exception will be raised for fields beginning with an underscore as they are reserved for use by subclasses.
 
-Accessing a field of the builder before it is set gives either the `REQUIRED`
-or `OPTIONAL` constant
+Accessing a field of the builder before it is set gives either the `REQUIRED` or `OPTIONAL` constant
 
 .. code-block:: python
 
@@ -138,10 +127,7 @@ or `OPTIONAL` constant
     >>> builder.w
     OPTIONAL
 
-The `fields` method can be used to retrieve a dictionary of settable fields for
-the builder.  This is a mapping of field names to `dataclasses.Field` objects
-from which extra data can be retrieved such as the type of the data stored in
-the field.
+The `fields` method can be used to retrieve a dictionary of settable fields for the builder.  This is a mapping of field names to `dataclasses.Field` objects from which extra data can be retrieved such as the type of the data stored in the field.
 
 .. code-block:: python
 
@@ -150,8 +136,7 @@ the field.
     >>> [f.type.__name__ for f in builder.fields().values()]
     ['float', 'float', 'float']
 
-A subset of the fields can be also be retrieved, for instance, to only get
-required fields:
+A subset of the fields can be also be retrieved, for instance, to only get required fields:
 
 .. code-block:: python
 
@@ -167,15 +152,13 @@ or only the optional fields.
 
 .. note::
 
-    If the underlying dataclass_ has a field named `fields` this method will
-    not be generated and instead the `fields` function should be used instead.
+    If the underlying dataclass_ has a field named `fields` this method will not be generated and instead the `fields` function should be used instead.
 
 
 Builder Instance (generic wrapper)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using a builder instance is the fastest way to get started with
-the `dataclass-builder` package.
+Using a builder instance is the fastest way to get started with the `dataclass-builder` package.
 
 .. code-block:: python
 
@@ -245,11 +228,9 @@ Fields not defined in the dataclass cannot be set in the builder.
 
 .. note::
 
-    No exception will be raised for fields beginning with an underscore as they
-    are reserved for use by subclasses.
+    No exception will be raised for fields beginning with an underscore as they are reserved for use by subclasses.
 
-Accessing a field of the builder before it is set gives either the `REQUIRED`
-or `OPTIONAL` constant
+Accessing a field of the builder before it is set gives either the `REQUIRED` or `OPTIONAL` constant
 
 .. code-block:: python
 
@@ -259,10 +240,7 @@ or `OPTIONAL` constant
     >>> builder.w
     OPTIONAL
 
-The `fields` function can be used to retrieve a dictionary of settable fields
-for the builder.  This is a mapping of field names to `dataclasses.Field`
-objects from which extra data can be retrieved such as the type of the data
-stored in the field.
+The `fields` function can be used to retrieve a dictionary of settable fields for the builder.  This is a mapping of field names to `dataclasses.Field` objects from which extra data can be retrieved such as the type of the data stored in the field.
 
 .. code-block:: python
 
@@ -271,8 +249,7 @@ stored in the field.
     >>> [f.type.__name__ for f in fields(builder).values()]
     ['float', 'float', 'float']
 
-A subset of the fields can be also be retrieved, for instance, to only get
-required fields:
+A subset of the fields can be also be retrieved, for instance, to only get required fields:
 
 .. code-block:: python
 
@@ -288,9 +265,6 @@ or only the optional fields.
 
 
 
-
-
-
 .. _dataclass: https://github.com/ericvsmith/dataclasses
 .. _dataclasses: https://github.com/ericvsmith/dataclasses
 .. _PyPI: https://pypi.org/
@@ -299,9 +273,13 @@ or only the optional fields.
    :target: https://travis-ci.com/mrshannon/dataclass-builder
    :alt: Build status
 
-.. |coverage-status| image:: http://codecov.io/gh/mrshannon/dataclass-builder/coverage.svg?branch=master
-   :target: http://codecov.io/gh/mrshannon/dataclass-builder?branch=master
+.. |coverage-status| image:: https://codecov.io/gh/mrshannon/dataclass-builder/coverage.svg?branch=master
+   :target: https://codecov.io/gh/mrshannon/dataclass-builder?branch=master
    :alt: Test coverage
+
+.. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Code style is black
 
 .. |version| image:: https://img.shields.io/pypi/v/dataclass-builder.svg
     :alt: PyPI Package latest release
@@ -311,10 +289,6 @@ or only the optional fields.
     :alt: Status
     :target: https://pypi.python.org/pypi/dataclass-builder
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/dataclass-builder.svg
-    :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/dataclass-builder
-
 .. |supported-versions| image:: https://img.shields.io/pypi/pyversions/dataclass-builder.svg
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/dataclass-builder
@@ -322,4 +296,8 @@ or only the optional fields.
 .. |supported-implementations| image:: https://img.shields.io/pypi/implementation/dataclass-builder.svg
     :alt: Supported implementations
     :target: https://pypi.python.org/pypi/dataclass-builder
+
+.. |license| image:: https://img.shields.io/github/license/mrshannon/dataclass-builder.svg
+    :alt: MIT
+    :target: https://opensource.org/licenses/MIT
 
