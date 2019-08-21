@@ -1,6 +1,6 @@
 """Utility functions for the package."""
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .wrapper import DataclassBuilder
 from ._common import MISSING
@@ -37,9 +37,9 @@ def build(builder: DataclassBuilder) -> Any:
     return builder._build()
 
 
-def fields(builder: DataclassBuilder, *,
-           required: bool = True, optional: bool = True) \
-        -> 'Mapping[str, Field[Any]]':
+def fields(
+    builder: DataclassBuilder, *, required: bool = True, optional: bool = True
+) -> "Mapping[str, Field[Any]]":
     """Get a dictionary of the given :class:`DataclassBuilder`'s fields.
 
     .. note::

@@ -2,10 +2,17 @@ from copy import copy, deepcopy
 from dataclasses import fields
 
 from dataclass_builder._common import (
-    REQUIRED, OPTIONAL, MISSING,
-    _is_settable, _is_required, _is_optional,
-    _settable_fields, _required_fields, _optional_fields)
-from tests.conftest import PixelCoord, Point, Circle, Types  # type: ignore
+    MISSING,
+    OPTIONAL,
+    REQUIRED,
+    _is_optional,
+    _is_required,
+    _is_settable,
+    _optional_fields,
+    _required_fields,
+    _settable_fields,
+)
+from tests.conftest import Circle, PixelCoord, Point, Types
 
 
 def test_constants():
@@ -21,9 +28,9 @@ def test_constants():
 
 
 def test_constants_repr():
-    assert repr(REQUIRED) == 'REQUIRED'
-    assert repr(OPTIONAL) == 'OPTIONAL'
-    assert repr(MISSING) == 'MISSING'
+    assert repr(REQUIRED) == "REQUIRED"
+    assert repr(OPTIONAL) == "OPTIONAL"
+    assert repr(MISSING) == "MISSING"
 
 
 def test_constants_after_copy():
@@ -56,7 +63,7 @@ def test_required_and_optional_are_missing():
     assert OPTIONAL == MISSING
     assert MISSING == OPTIONAL
     assert MISSING != 1
-    assert MISSING != 'other'
+    assert MISSING != "other"
 
 
 def test_required_and_optional_are_missing_after_copy():
@@ -96,45 +103,45 @@ def test_is_optional():
 
 def test_settable_fields():
     fields_ = _settable_fields(PixelCoord)
-    assert ['x', 'y'] == list(fields_.keys())
-    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert ["x", "y"] == list(fields_.keys())
+    assert ["x", "y"] == [f.name for f in fields_.values()]
     assert [int, int] == [f.type for f in fields_.values()]
 
     fields_ = _settable_fields(Point)
-    assert ['x', 'y', 'w'] == list(fields_.keys())
-    assert ['x', 'y', 'w'] == [f.name for f in fields_.values()]
+    assert ["x", "y", "w"] == list(fields_.keys())
+    assert ["x", "y", "w"] == [f.name for f in fields_.values()]
     assert [float, float, float] == [f.type for f in fields_.values()]
 
     fields_ = _settable_fields(Circle)
-    assert ['radius'] == list(fields_.keys())
-    assert ['radius'] == [f.name for f in fields_.values()]
+    assert ["radius"] == list(fields_.keys())
+    assert ["radius"] == [f.name for f in fields_.values()]
     assert [float] == [f.type for f in fields_.values()]
 
     fields_ = _settable_fields(Types)
-    assert ['int_', 'float_', 'str_'] == list(fields_.keys())
-    assert ['int_', 'float_', 'str_'] == [f.name for f in fields_.values()]
+    assert ["int_", "float_", "str_"] == list(fields_.keys())
+    assert ["int_", "float_", "str_"] == [f.name for f in fields_.values()]
     assert [int, float, str] == [f.type for f in fields_.values()]
 
 
 def test_required_fields():
     fields_ = _required_fields(PixelCoord)
-    assert ['x', 'y'] == list(fields_.keys())
-    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert ["x", "y"] == list(fields_.keys())
+    assert ["x", "y"] == [f.name for f in fields_.values()]
     assert [int, int] == [f.type for f in fields_.values()]
 
     fields_ = _required_fields(Point)
-    assert ['x', 'y'] == list(fields_.keys())
-    assert ['x', 'y'] == [f.name for f in fields_.values()]
+    assert ["x", "y"] == list(fields_.keys())
+    assert ["x", "y"] == [f.name for f in fields_.values()]
     assert [float, float] == [f.type for f in fields_.values()]
 
     fields_ = _required_fields(Circle)
-    assert ['radius'] == list(fields_.keys())
-    assert ['radius'] == [f.name for f in fields_.values()]
+    assert ["radius"] == list(fields_.keys())
+    assert ["radius"] == [f.name for f in fields_.values()]
     assert [float] == [f.type for f in fields_.values()]
 
     fields_ = _required_fields(Types)
-    assert ['int_', 'float_'] == list(fields_.keys())
-    assert ['int_', 'float_'] == [f.name for f in fields_.values()]
+    assert ["int_", "float_"] == list(fields_.keys())
+    assert ["int_", "float_"] == [f.name for f in fields_.values()]
     assert [int, float] == [f.type for f in fields_.values()]
 
 
@@ -145,8 +152,8 @@ def test_optional_fields():
     assert [] == [f.type for f in fields_.values()]
 
     fields_ = _optional_fields(Point)
-    assert ['w'] == list(fields_.keys())
-    assert ['w'] == [f.name for f in fields_.values()]
+    assert ["w"] == list(fields_.keys())
+    assert ["w"] == [f.name for f in fields_.values()]
     assert [float] == [f.type for f in fields_.values()]
 
     fields_ = _optional_fields(Circle)
@@ -155,6 +162,6 @@ def test_optional_fields():
     assert [] == [f.type for f in fields_.values()]
 
     fields_ = _optional_fields(Types)
-    assert ['str_'] == list(fields_.keys())
-    assert ['str_'] == [f.name for f in fields_.values()]
+    assert ["str_"] == list(fields_.keys())
+    assert ["str_"] == [f.name for f in fields_.values()]
     assert [str] == [f.type for f in fields_.values()]
