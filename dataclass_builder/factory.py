@@ -165,63 +165,67 @@ if TYPE_CHECKING:
 else:
     from dataclasses import is_dataclass
 
-__all__ = ['dataclass_builder']
+__all__ = ["dataclass_builder"]
 
 
 # copied (and modified) from dataclasses._create_fn to avoid dependency on
 # private functions in dataclasses
-def _create_fn(name: str, args: Sequence[str], body: Sequence[str],
-               env: Optional[Dict[str, Any]] = None, *,
-               return_type: Any = MISSING) \
-        -> Callable[..., Any]:
+def _create_fn(
+    name: str,
+    args: Sequence[str],
+    body: Sequence[str],
+    env: Optional[Dict[str, Any]] = None,
+    *,
+    return_type: Any = MISSING,
+) -> Callable[..., Any]:
     locals_: MutableMapping[str, Any] = {}
-    return_annotation = ''
+    return_annotation = ""
     if env is None:
         env = {}
     if return_type is not MISSING:
-        env['_return_type'] = return_type
-        return_annotation = '->_return_type'
-    args = ', '.join(args)
-    body = '\n'.join(f' {line}' for line in body)
-    txt = f'def {name}({args}){return_annotation}:\n{body}'
+        env["_return_type"] = return_type
+        return_annotation = "->_return_type"
+    args = ", ".join(args)
+    body = "\n".join(f" {line}" for line in body)
+    txt = f"def {name}({args}){return_annotation}:\n{body}"
     # this is how the dataclasses module makes custom methods so it's good
     # enough for this package
     exec(txt, env, locals_)  # pylint: disable=exec-used
     return cast(Callable[..., Any], locals_[name])
 
 
-def _create_init_method(fields: Mapping[str, 'Field[Any]']) \
-        -> Callable[..., None]:
+def _create_init_method(fields: Mapping[str, "Field[Any]"]) -> Callable[..., None]:
     env: Dict[str, Any] = {
-        f'_{name}_type': field.type for name, field in fields.items()}
-    env['REQUIRED'] = REQUIRED
-    env['OPTIONAL'] = OPTIONAL
+        f"_{name}_type": field.type for name, field in fields.items()
+    }
+    env["REQUIRED"] = REQUIRED
+    env["OPTIONAL"] = OPTIONAL
 
-    def is_required(field: 'Field[Any]') -> str:
-        return 'REQUIRED' if _is_required(field) else 'OPTIONAL'
+    def is_required(field: "Field[Any]") -> str:
+        return "REQUIRED" if _is_required(field) else "OPTIONAL"
 
     if fields:
-        args = ['self', '*'] + [f'{name}: _{name}_type = {is_required(field)}'
-                                for name, field in fields.items()]
+        args = ["self", "*"] + [
+            f"{name}: _{name}_type = {is_required(field)}"
+            for name, field in fields.items()
+        ]
     else:
-        args = ['self']
-    body = [f'self.{name}: _{name}_type = {name}' for name in fields]
-    body = ['self.__initialized = False'] + body + [
-        'self.__initialized = True']
-    return _create_fn('__init__', args, body, env, return_type=None)
+        args = ["self"]
+    body = [f"self.{name}: _{name}_type = {name}" for name in fields]
+    body = ["self.__initialized = False"] + body + ["self.__initialized = True"]
+    return _create_fn("__init__", args, body, env, return_type=None)
 
 
 def _create_class_docstring(dataclass: Any) -> str:
     dname = dataclass.__qualname__
     try:
-        dname = dataclass.__module__ + '.' + dname
+        dname = dataclass.__module__ + "." + dname
     except AttributeError:
         pass
     params = []
     for name, field in _settable_fields(dataclass).items():
-        params.append(f'    :param {name}: Optionally initialize `{name}` field.\n')
-    docstring = (
-        f"""Builder for the :class:`{dname}` dataclass.
+        params.append(f"    :param {name}: Optionally initialize `{name}` field.\n")
+    docstring = f"""Builder for the :class:`{dname}` dataclass.
 
     This class allows the :class:`{dname}` dataclass to be constructed with the
     builder pattern.  Once an instance is constructed simply assign to it's
@@ -246,12 +250,11 @@ def _create_class_docstring(dataclass: Any) -> str:
     :raises dataclass_builder.exceptions.MissingFieldError:
         If :func:`build` is called on this builder before all non default
         fields of the dataclass are assigned.
-        """)
+        """
     return docstring
 
 
-def dataclass_builder(
-        dataclass: Type[Any], *, name: Optional[str] = None) -> Type[Any]:
+def dataclass_builder(dataclass: Type[Any], *, name: Optional[str] = None) -> Type[Any]:
     """Create a new builder class specialized to a given dataclass.
 
     :param dataclass:
@@ -286,27 +289,31 @@ def dataclass_builder(
         if not name_.isidentifier():  # pragma: no cover
             raise RuntimeError(
                 f"field name '{name_}'' could cause a security issue, refusing"
-                f" to construct builder for '{dataclass.__qualname__}'")
+                f" to construct builder for '{dataclass.__qualname__}'"
+            )
 
     dname = dataclass.__qualname__
     try:
-        dname = dataclass.__module__ + '.' + dname
+        dname = dataclass.__module__ + "." + dname
     except AttributeError:
         pass
 
     def _setattr_method(self: Any, name: str, value: Any) -> None:
         # self.__initialized is not protected member access, since this is
         # a class method
-        if (name.startswith('_') or hasattr(self, name) or
-                not self.__initialized):  # pylint: disable=protected-access
+        if (
+            name.startswith("_") or hasattr(self, name) or not self.__initialized
+        ):  # pylint: disable=protected-access
             object.__setattr__(self, name, value)
         else:
             raise UndefinedFieldError(
                 f"dataclass '{dataclass.__qualname__}' does not define "
-                f"field '{name}'", dataclass, name)
+                f"field '{name}'",
+                dataclass,
+                name,
+            )
 
-    _setattr_method.__doc__ = (
-        f"""Set a field value, or an object attribute if it is private.
+    _setattr_method.__doc__ = f"""Set a field value, or an object attribute if it is private.
     
         .. note::
     
@@ -329,7 +336,6 @@ def dataclass_builder(
             If `name` is private (begins with an underscore) or is a "dunder"
             then this exception will not be raised.
         """
-    )
 
     def _repr_method(self: Any) -> str:
         """Print a representation of the builder.
@@ -346,7 +352,7 @@ def dataclass_builder(
         for name in settable_fields:
             value = getattr(self, name)
             if value not in (REQUIRED, OPTIONAL):
-                args.append(f'{name}={repr(value)}')
+                args.append(f"{name}={repr(value)}")
         return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build_method(self: Any) -> Any:
@@ -355,15 +361,19 @@ def dataclass_builder(
             if getattr(self, name) is REQUIRED:
                 raise MissingFieldError(
                     f"field '{name}' of dataclass '{dataclass.__qualname__}' "
-                    "is not optional", dataclass, field)
+                    "is not optional",
+                    dataclass,
+                    field,
+                )
         # build dataclass
-        kwargs = {name: getattr(self, name)
-                  for name in settable_fields
-                  if getattr(self, name) is not OPTIONAL}
+        kwargs = {
+            name: getattr(self, name)
+            for name in settable_fields
+            if getattr(self, name) is not OPTIONAL
+        }
         return dataclass(**kwargs)
 
-    _build_method.__doc__ = (
-    f"""Build a :class:`{dname}` dataclass using the fields from this builder.
+    _build_method.__doc__ = f"""Build a :class:`{dname}` dataclass using the fields from this builder.
 
     :return:
         An instance of the :class:`{dname}` dataclass using the fields set on
@@ -372,11 +382,11 @@ def dataclass_builder(
     :raises dataclass_builder.exceptions.MissingFieldError:
         If not all of the required fields have been assigned to this
         builder instance.
-    """)
+    """
 
     def _fields_method(
-            _: Any, required: bool = True, optional: bool = True) \
-            -> Mapping[str, 'Field[Any]']:
+        _: Any, required: bool = True, optional: bool = True
+    ) -> Mapping[str, "Field[Any]"]:
         if not required and not optional:
             return {}
         if required and not optional:
@@ -385,8 +395,7 @@ def dataclass_builder(
             return optional_fields
         return settable_fields
 
-    _fields_method.__doc__ = (
-        f"""Get a dictionary of the builder's fields.
+    _fields_method.__doc__ = f"""Get a dictionary of the builder's fields.
     
         :param required:
             Set to False to not report required fields.
@@ -397,30 +406,29 @@ def dataclass_builder(
             A mapping from field names to actual :class:`dataclasses.Field`'s
             in the same order as in the :class:`{dname}` dataclass.
         """
-    )
 
     # Fix return type of build, it won't help Mypy as it cannot handle
     # classes created at runtime but typing.get_type_hints will work properly.
     #
     # See: https://github.com/python/mypy/wiki/Unsupported-Python-Features
-    _build_method.__annotations__['return'] = dataclass
+    _build_method.__annotations__["return"] = dataclass
 
     # assemble new builder class methods
     dict_: Dict[str, Any] = dict()
-    dict_['__init__'] = _create_init_method(settable_fields)
-    dict_['__setattr__'] = _setattr_method
-    dict_['__repr__'] = _repr_method
-    dict_['_build'] = _build_method
-    dict_['_fields'] = _fields_method
-    dict_['__doc__'] = _create_class_docstring(dataclass)
+    dict_["__init__"] = _create_init_method(settable_fields)
+    dict_["__setattr__"] = _setattr_method
+    dict_["__repr__"] = _repr_method
+    dict_["_build"] = _build_method
+    dict_["_fields"] = _fields_method
+    dict_["__doc__"] = _create_class_docstring(dataclass)
 
-    if 'build' not in settable_fields:
-        dict_['build'] = _build_method
+    if "build" not in settable_fields:
+        dict_["build"] = _build_method
 
-    if 'fields' not in settable_fields:
-        dict_['fields'] = _fields_method
+    if "fields" not in settable_fields:
+        dict_["fields"] = _fields_method
 
     if name is None:
-        name = f'{dataclass.__name__}Builder'
+        name = f"{dataclass.__name__}Builder"
 
     return type(name, (object,), dict_)

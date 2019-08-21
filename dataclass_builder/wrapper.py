@@ -131,7 +131,7 @@ from ._common import (
 )
 from .exceptions import MissingFieldError, UndefinedFieldError
 
-__all__ = ['DataclassBuilder']
+__all__ = ["DataclassBuilder"]
 
 
 class DataclassBuilder:
@@ -183,7 +183,8 @@ class DataclassBuilder:
         for key, value in kwargs.items():
             if key not in self.__settable_fields:
                 raise TypeError(
-                    f"__init__() got an unexpected keyword argument '{key}'")
+                    f"__init__() got an unexpected keyword argument '{key}'"
+                )
             setattr(self, key, value)
 
     def __setattr__(self, item: str, value: Any) -> None:
@@ -211,12 +212,15 @@ class DataclassBuilder:
             this exception will not be raised.
 
         """
-        if item.startswith('_') or item in self.__settable_fields:
+        if item.startswith("_") or item in self.__settable_fields:
             self.__dict__[item] = value
         else:
             raise UndefinedFieldError(
                 f"dataclass '{self.__dataclass.__name__}' does not define "
-                f"field '{item}'", self.__dataclass, item)
+                f"field '{item}'",
+                self.__dataclass,
+                item,
+            )
 
     if TYPE_CHECKING:
         # tells type checking that it should ignore attribute access
@@ -248,7 +252,7 @@ class DataclassBuilder:
         for name in self.__settable_fields:
             value = getattr(self, name)
             if value not in (REQUIRED, OPTIONAL):
-                args.append(f'{name}={repr(value)}')
+                args.append(f"{name}={repr(value)}")
         return f'{self.__class__.__qualname__}({", ".join(args)})'
 
     def _build(self) -> Any:
@@ -269,15 +273,21 @@ class DataclassBuilder:
                 raise MissingFieldError(
                     f"field '{name}' of dataclass "
                     f"'{self.__dataclass.__qualname__}' "
-                    "is not optional", self.__dataclass, field)
+                    "is not optional",
+                    self.__dataclass,
+                    field,
+                )
         # build dataclass
-        kwargs = {name: getattr(self, name)
-                  for name in self.__settable_fields
-                  if getattr(self, name) is not OPTIONAL}
+        kwargs = {
+            name: getattr(self, name)
+            for name in self.__settable_fields
+            if getattr(self, name) is not OPTIONAL
+        }
         return self.__dataclass(**kwargs)
 
-    def _fields(self, required: bool = True, optional: bool = True) -> \
-            Mapping[str, 'dataclasses.Field[Any]']:
+    def _fields(
+        self, required: bool = True, optional: bool = True
+    ) -> Mapping[str, "dataclasses.Field[Any]"]:
         """Get a dictionary of the builder's fields.
 
         :param required:

@@ -28,23 +28,19 @@ install_requires = ["dataclasses;python_version=='3.6'"]
 
 
 setup(
-    name='dataclass-builder',
-    version=read_version('dataclass_builder/__init__.py'),
-    author='Michael R. Shannon',
-    author_email='mrshannon.aerospace@gmail.com',
-    description='Create instances of dataclasses with the builder pattern.',
-    long_description=read('README.rst'),
-    long_description_content_type='text/x-rst',
-    license='MIT',
-    url='https://github.com/mrshannon/dataclass-builder',
+    name="dataclass-builder",
+    version=read_version("dataclass_builder/__init__.py"),
+    author="Michael R. Shannon",
+    author_email="mrshannon.aerospace@gmail.com",
+    description="Create instances of dataclasses with the builder pattern.",
+    long_description=read("README.rst"),
+    long_description_content_type="text/x-rst",
+    license="MIT",
+    url="https://github.com/mrshannon/dataclass-builder",
     packages=find_packages(),
-    package_data={
-        'dataclass_builder': ['py.typed']
-    },
-    setup_requires=['pytest-runner'],
-    install_requires=[
-        'dataclasses;python_version=="3.6"'
-    ],
+    package_data={"dataclass_builder": ["py.typed"]},
+    setup_requires=["pytest-runner"],
+    install_requires=['dataclasses;python_version=="3.6"'],
     extras_require={
         "checks": checks_require,
         "tests": tests_require,
@@ -53,14 +49,14 @@ setup(
     },
     tests_require=tests_require,
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Topic :: Software Development :: Libraries'
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Topic :: Software Development :: Libraries",
     ],
-    zip_safe=False
+    zip_safe=False,
 )

@@ -24,15 +24,15 @@ class Circle:
     area: float = field(init=False)
 
     def __post_init__(self):
-        self.area = math.pi*self.radius**2
+        self.area = math.pi * self.radius ** 2
 
 
 @dataclass
 class Types:
     int_: int
     float_: float
-    str_: str = 'hello'
-    message: str = field(default='hello', init=False)
+    str_: str = "hello"
+    message: str = field(default="hello", init=False)
 
 
 class NotADataclass:
@@ -47,7 +47,7 @@ class NoFields:
 
 @dataclass
 class NoInitFields:
-    message: str = field(default='hello', init=False)
+    message: str = field(default="hello", init=False)
 
 
 class ExtendedBuilder(DataclassBuilder):

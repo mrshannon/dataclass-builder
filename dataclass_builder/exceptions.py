@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from dataclasses import Field
 
-__all__ = ['DataclassBuilderError', 'UndefinedFieldError', 'MissingFieldError']
+__all__ = ["DataclassBuilderError", "UndefinedFieldError", "MissingFieldError"]
 
 
 class DataclassBuilderError(Exception):
@@ -44,8 +44,7 @@ class MissingFieldError(DataclassBuilderError):
         needs to be assigned.
     """
 
-    def __init__(self, message: str, dataclass: Any, field: 'Field[Any]') \
-            -> None:
+    def __init__(self, message: str, dataclass: Any, field: "Field[Any]") -> None:
         super().__init__(message)
         self.dataclass = dataclass
         """:func:`dataclasses.dataclass` the :class:`DataclassBuilder` was made for."""
