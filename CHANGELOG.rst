@@ -5,6 +5,10 @@ Changelog
 Unreleased_
 -----------
 
+
+v1.2.0_ - 2019-08-21
+--------------------
+
 * Add :code:`update` function to facilitate updating a dataclass or dataclass
   builder from a partially completed dataclass builder.
 
@@ -111,7 +115,8 @@ v0.0.1 - 2019-03-11
 .. _dataclasses: https://docs.python.org/3/library/dataclasses.html
 .. _dataclass: https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass
 
-.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.1.3...HEAD
+.. _Unreleased: https://github.com/mrshannon/dataclass-builder/compare/v1.2.0...HEAD
+.. _v1.2.0: https://github.com/mrshannon/dataclass-builder/compare/v1.1.3...v1.2.0
 .. _v1.1.3: https://github.com/mrshannon/dataclass-builder/compare/v1.1.2...v1.1.3
 .. _v1.1.2: https://github.com/mrshannon/dataclass-builder/compare/v1.1.1...v1.1.2
 .. _v1.1.1: https://github.com/mrshannon/dataclass-builder/compare/v1.1.0...v1.1.1
