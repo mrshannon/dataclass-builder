@@ -13,6 +13,12 @@ dataclass-builder
 Create instances of Python dataclasses with the builder pattern.
 
 
+Documentation
+-------------
+
+Documentation for PyRADS can be found at `https://dataclass-builder.readthedocs.io/en/latest/ <https://dataclass-builder.readthedocs.io/en/latest/>`_ or in `PDF <https://readthedocs.org/projects/dataclass-builder/downloads/pdf/latest/>`_ and `Epub <https://readthedocs.org/projects/dataclass-builder/downloads/epub/latest/>`_ formats.
+
+
 Requirements
 ------------
 
