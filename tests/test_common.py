@@ -12,7 +12,7 @@ from dataclass_builder._common import (
     _required_fields,
     _settable_fields,
 )
-from tests.conftest import Circle, PixelCoord, Point, Types  # type: ignore
+from tests.conftest import Circle, PixelCoord, Point, Types
 
 
 def test_constants():

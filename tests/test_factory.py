@@ -13,7 +13,7 @@ from dataclass_builder import (
     fields,
 )
 from dataclass_builder.factory import _create_fn
-from tests.conftest import (  # type: ignore
+from tests.conftest import (
     Build,
     Circle,
     Fields,

@@ -11,7 +11,7 @@ from dataclass_builder import (
     build,
     fields,
 )
-from tests.conftest import (  # type: ignore
+from tests.conftest import (
     Circle,
     ExtendedBuilder,
     NoFields,
