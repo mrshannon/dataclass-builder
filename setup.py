@@ -1,18 +1,30 @@
-import os
 import re
-from setuptools import setup, find_packages
+from pathlib import Path
+
+from setuptools import find_packages, setup
+
+_SETUP = Path(__file__)
+_PROJECT = _SETUP.parent
 
 
 def read_version(filename):
     return re.search(
-        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
-        read(filename), re.MULTILINE).group(1)
+        r"^__version__\s*=\s*['\"]([^'\"]*)['\"]", read(filename), re.MULTILINE
+    ).group(1)
 
 
 def read(filename):
-    with open(os.path.join(os.path.dirname(__file__), filename)) as infile:
+    with open(_PROJECT / filename) as infile:
         text = infile.read()
     return text
+
+
+docs_require = ["sphinx>=1.7"]
+checks_require = ["flake8>=3.7.7", "mypy", "pydocstyle"]
+tests_require = ["pytest", "pytest-cov", "pytest-mock"]
+dev_requires = ["black", "isort", "twine"]
+
+install_requires = ["dataclasses;python_version=='3.6'"]
 
 
 setup(
@@ -33,10 +45,13 @@ setup(
     install_requires=[
         'dataclasses;python_version=="3.6"'
     ],
-    tests_require=[
-        'pytest',
-        'pytest-mock'
-    ],
+    extras_require={
+        "checks": checks_require,
+        "tests": tests_require,
+        "docs": docs_require,
+        "dev": dev_requires + checks_require + tests_require + docs_require,
+    },
+    tests_require=tests_require,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
