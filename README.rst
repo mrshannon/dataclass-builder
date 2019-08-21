@@ -38,7 +38,7 @@ There are two ways to use `dataclass-builder`.  Via a builder instance or by cre
 Dedicated Builder (builder factory)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using specialized builders allows for better documentation than the `DataclassBuilder` wrapper and allows for type checking because annotations are dynamically generated.
+Using specialized builders allows for better documentation than the `DataclassBuilder` wrapper.
 
 .. code-block:: python
 
