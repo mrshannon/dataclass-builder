@@ -2,6 +2,7 @@ dataclass-builder
 =================
 
 |build-status|
+|doc-status|
 |coverage-status|
 |code-style|
 |version|
