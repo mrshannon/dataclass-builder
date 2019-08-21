@@ -1,7 +1,6 @@
-from tests.conftest import PixelCoord, Point
-
-from dataclass_builder.wrapper import DataclassBuilder
 from dataclass_builder.utility import update
+from dataclass_builder.wrapper import DataclassBuilder
+from tests.conftest import PixelCoord, Point
 
 
 def test_update():

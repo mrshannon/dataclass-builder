@@ -2,14 +2,14 @@
 
 from typing import TYPE_CHECKING, Any
 
-from .wrapper import DataclassBuilder
 from ._common import MISSING
+from .wrapper import DataclassBuilder
 
 if TYPE_CHECKING:
     from typing import Mapping
     from dataclasses import Field
 
-__all__ = ['build', 'fields', 'update']
+__all__ = ["build", "fields", "update"]
 
 
 def build(builder: DataclassBuilder) -> Any:
